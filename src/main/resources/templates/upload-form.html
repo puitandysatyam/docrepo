@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: common_head('Upload Document')}">
+    <!-- Head replaced by fragment -->
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+<!-- Include the navigation bar fragment -->
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<!-- Main Content -->
+<main class="flex-grow container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Upload a New Document</h1>
+
+        <!--
+          - This form is used for file uploads, so enctype="multipart/form-data" is crucial.
+          - It submits data to the '/documents/upload' endpoint.
+          - th:object binds this form to a DTO (Data Transfer Object) in the backend.
+        -->
+        <form th:action="@{/documents/upload}" th:object="${documentDto}" method="post" enctype="multipart/form-data" class="space-y-6">
+
+            <!-- Title Field -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700">Document Title</label>
+                <input type="text" id="title" th:field="*{title}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <!-- Error message for the title field -->
+                <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-red-500 text-xs mt-1"></p>
+            </div>
+
+            <!-- Topic Field -->
+            <div>
+                <label for="topic" class="block text-sm font-medium text-gray-700">Topic / Field (e.g., AI, Cybersecurity)</label>
+                <input type="text" id="topic" th:field="*{topic}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <!-- Error message for the topic field -->
+                <p th:if="${#fields.hasErrors('topic')}" th:errors="*{topic}" class="text-red-500 text-xs mt-1"></p>
+            </div>
+
+            <!-- Description Field -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700">Description (Optional)</label>
+                <textarea id="description" th:field="*{description}" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+            </div>
+
+            <!-- File Input -->
+            <div>
+                <label for="file" class="block text-sm font-medium text-gray-700">Document File (PDF, DOCX)</label>
+                <input type="file" id="file" name="file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-4">
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Upload Document
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Include the footer fragment -->
+<footer th:replace="~{fragments :: footer}"></footer>
+
+</body>
+</html>

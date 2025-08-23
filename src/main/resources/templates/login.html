@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: common_head('Login')}">
+    <!-- This head section will be replaced by the 'common_head' fragment -->
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+<div class="flex-grow flex items-center justify-center">
+    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
+
+        <div class="text-center">
+            <h2 class="mt-6 text-3xl font-bold text-gray-900">
+                Sign in to your account
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Welcome to the Faculty Document Repository
+            </p>
+        </div>
+
+        <!-- Login Form -->
+        <!-- This form submits a POST request to /login, which Spring Security will handle. -->
+        <form th:action="@{/login}" method="post" class="mt-8 space-y-6">
+
+            <!-- Display error message if login fails -->
+            <div th:if="${param.error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+                <strong class="font-bold">Login failed!</strong>
+                <span class="block sm:inline">Invalid username or password.</span>
+            </div>
+
+            <!-- Display success message on logout -->
+            <div th:if="${param.logout}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
+                <strong class="font-bold">Success!</strong>
+                <span class="block sm:inline">You have been logged out.</span>
+            </div>
+
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="username" class="sr-only">Email address</label>
+                    <input id="username" name="username" type="text" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                           placeholder="Username (Email)">
+                </div>
+                <div>
+                    <label for="password" class="sr-only">Password</label>
+                    <input id="password" name="password" type="password" required
+                           class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                           placeholder="Password">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Sign in
+                </button>
+            </div>
+        </form>
+
+        <p class="text-center text-sm text-gray-600">
+            Don't have an account?
+            <a href="#" th:href="@{/register}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Register here
+            </a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

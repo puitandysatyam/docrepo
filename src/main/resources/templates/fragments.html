@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- This file is not meant to be displayed directly. It holds reusable UI components. -->
+</head>
+<body>
+
+<!-- ===================================================================================== -->
+<!-- Navigation Bar Fragment                                                               -->
+<!-- This fragment defines the navigation bar that will appear on top of every page.       -->
+<!-- It uses Spring Security's Thymeleaf extras to show different links based on user role.-->
+<!-- ===================================================================================== -->
+<nav th:fragment="navbar" class="bg-gray-800 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo and Site Title -->
+            <div class="flex-shrink-0">
+                <a th:href="@{/}" class="flex items-center space-x-2">
+                    <svg class="h-8 w-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="font-bold text-xl">FacultyRepo</span>
+                </a>
+            </div>
+
+            <!-- Main Navigation Links -->
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                    <a th:href="@{/}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Home</a>
+                    <a th:href="@{/departments}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Departments</a>
+
+                    <!-- FACULTY ONLY LINK: Show the "Upload" link only if the user has the 'FACULTY' role -->
+                    <a sec:authorize="hasRole('FACULTY')" th:href="@{/documents/upload}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Upload Document</a>
+
+                    <!-- STUDENT ONLY LINK: Show "My Requests" for students -->
+                    <a sec:authorize="hasRole('STUDENT')" th:href="@{/requests/my-requests}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">My Requests</a>
+                </div>
+            </div>
+
+            <!-- User Info and Logout -->
+            <div class="hidden md:block">
+                <div class="ml-4 flex items-center md:ml-6">
+                    <!-- Display username if logged in -->
+                    <span class="mr-3" sec:authentication="name">Username</span>
+
+                    <!-- Logout Form -->
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- ===================================================================================== -->
+<!-- Footer Fragment                                                                       -->
+<!-- A simple footer to be included at the bottom of every page.                           -->
+<!-- ===================================================================================== -->
+<footer th:fragment="footer" class="bg-gray-800 text-white mt-auto">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm">
+        &copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> Faculty Document Repository. All Rights Reserved.
+    </div>
+</footer>
+
+
+<!-- ===================================================================================== -->
+<!-- Head Content Fragment                                                                 -->
+<!-- This includes common head elements like meta tags, Tailwind CSS, and a default title. -->
+<!-- It accepts a 'title' parameter to set the page-specific title.                      -->
+<!-- ===================================================================================== -->
+<head th:fragment="common_head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - FacultyRepo'">Default Title</title>
+    <!-- Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+
+</body>
+</html>
