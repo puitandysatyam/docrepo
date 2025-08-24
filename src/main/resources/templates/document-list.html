@@ -38,7 +38,7 @@
             <p class="text-sm text-gray-500 mt-1">
               By <span class="font-medium" th:text="${doc.facultyName}">Faculty Name</span> |
               Topic: <span class="font-medium bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs" th:text="${doc.topic}">AI</span> |
-              Uploaded on <span th:text="${#dates.format(doc.uploadDate, 'dd-MMM-yyyy')}">01-Jan-2024</span>
+              Uploaded on <span th:text="${doc.uploadDate}">01-Jan-2024</span>
             </p>
             <p class="text-gray-600 mt-2" th:text="${doc.description}">A brief description of the document goes here...</p>
           </div>
