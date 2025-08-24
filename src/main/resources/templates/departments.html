@@ -38,7 +38,7 @@
               it will create a copy of this entire '<a>' block.
             -->
             <a th:each="dept : ${departments}"
-               th:href="@{/departments/{id}/faculty(id=${dept.id})}"
+               th:href="@{/departments/{name}/faculty(name=${dept.name})}"
                class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 hover:shadow-xl transition-all duration-300">
 
                 <div class="flex items-center space-x-4">
