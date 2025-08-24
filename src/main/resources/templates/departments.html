@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: common_head('Browse Departments')}">
+    <!-- Head replaced by fragment -->
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+<!-- Include the navigation bar fragment -->
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<!-- Main Content -->
+<main class="flex-grow container mx-auto px-4 py-8">
+    <div class="bg-white p-8 rounded-xl shadow-lg">
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
+            All Departments
+        </h1>
+
+        <!--
+          This section will display a message if the list of departments from the controller is empty.
+          The '#lists' is a special Thymeleaf utility object for working with lists.
+        -->
+        <div th:if="${#lists.isEmpty(departments)}" class="text-center py-12">
+            <p class="text-gray-500 text-lg">No departments have been added to the system yet.</p>
+        </div>
+
+        <!--
+          This is the main grid that will display the department cards.
+          It will only be shown if the 'departments' list is NOT empty.
+        -->
+        <div th:if="${not #lists.isEmpty(departments)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!--
+              The th:each attribute is the core of this page. It will loop through each 'dept'
+              object in the 'departments' list that your controller provides. For each department,
+              it will create a copy of this entire '<a>' block.
+            -->
+            <a th:each="dept : ${departments}"
+               th:href="@{/departments/{id}/faculty(id=${dept.id})}"
+               class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 hover:shadow-xl transition-all duration-300">
+
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <!-- A simple decorative icon for each department -->
+                        <svg class="h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <!--
+                          The th:text attribute will display the 'name' of the current department object.
+                          e.g., "Computer Science", "Physics", etc.
+                        -->
+                        <h2 class="text-xl font-bold tracking-tight text-gray-900" th:text="${dept.name}">
+                            Department Name
+                        </h2>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</main>
+
+<!-- Include the footer fragment -->
+<footer th:replace="~{fragments :: footer}"></footer>
+
+</body>
+</html>
