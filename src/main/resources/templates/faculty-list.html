@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: common_head('Faculty Members')}">
+    <!-- Head replaced by fragment -->
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<!-- Main Content -->
+<main class="flex-grow container mx-auto px-4 py-8">
+    <div class="bg-white p-8 rounded-xl shadow-lg">
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
+            Faculty of <span th:text="${departmentName}">Department</span>
+        </h1>
+
+        <div th:if="${#lists.isEmpty(facultyMembers)}" class="text-center py-12">
+            <p class="text-gray-500 text-lg">No faculty members found for this department.</p>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(facultyMembers)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- Loop through each faculty member passed from the controller -->
+            <a th:each="faculty : ${facultyMembers}"
+               th:href="@{/browse/{deptName}/{facultyId}(deptName=${departmentName}, facultyId=${faculty.id})}"
+               class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 hover:shadow-xl transition-all duration-300">
+
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <img class="h-12 w-12 rounded-full object-cover" th:src="${faculty.profileImageUrl}" alt="Faculty profile picture">
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold tracking-tight text-gray-900" th:text="${faculty.fullName}">
+                            Faculty Name
+                        </h2>
+                        <p class="text-sm text-gray-600" th:text="${faculty.email}">faculty.email@college.edu</p>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+
+</body>
+</html>
