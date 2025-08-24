@@ -16,4 +16,7 @@ public interface UserRepo extends MongoRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    List<User> findByDepartmentContainingIgnoreCaseAndRoleContaining(String department, String role);
+
 }
