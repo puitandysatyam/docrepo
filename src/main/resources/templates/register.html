@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: common_head('Register an Account')}">
+    <!-- Head replaced by fragment -->
+</head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+
+<div class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-lg">
+
+        <div class="text-center">
+            <!-- The page title is now dynamic, passed from the controller -->
+            <h2 class="mt-6 text-3xl font-bold text-gray-900" th:text="${pageTitle}">
+                Create your account
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                Join the Faculty Document Repository
+            </p>
+        </div>
+
+        <!-- Registration Form -->
+        <form th:action="@{/register}" th:object="${userDto}" method="post" class="mt-8 space-y-6">
+
+            <!-- Full Name -->
+            <div>
+                <label for="fullName" class="sr-only">Full Name</label>
+                <input id="fullName" th:field="*{fullName}" type="text" required
+                       class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="Full Name">
+                <p th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="text-red-500 text-xs mt-1"></p>
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label for="email" class="sr-only">Email address</label>
+                <input id="email" th:field="*{email}" type="email" required
+                       class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="Email address">
+                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-xs mt-1"></p>
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="password" class="sr-only">Password</label>
+                <input id="password" th:field="*{password}" type="password" required
+                       class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="Password">
+                <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-red-500 text-xs mt-1"></p>
+            </div>
+
+            <!-- Department -->
+            <div>
+                <label for="department" class="sr-only">Department</label>
+                <input id="department" th:field="*{department}" type="text" required
+                       class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                       placeholder="Department (e.g., Computer Science)">
+                <p th:if="${#fields.hasErrors('department')}" th:errors="*{department}" class="text-red-500 text-xs mt-1"></p>
+            </div>
+
+            <!--
+              KEY CHANGE: The role is now a hidden field.
+              Its value is set by the controller based on the URL visited.
+              The user cannot see or change this.
+            -->
+            <input type="hidden" th:field="*{role}" />
+
+            <div>
+                <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Register
+                </button>
+            </div>
+        </form>
+
+        <p class="text-center text-sm text-gray-600">
+            Already have an account?
+            <a href="#" th:href="@{/login}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Sign in here
+            </a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
