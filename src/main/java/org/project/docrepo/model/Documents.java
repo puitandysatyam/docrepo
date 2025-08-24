@@ -8,9 +8,9 @@ public class Documents {
 
     @Id
     private String id;
-    private String title, description, topic, filePath, uploadDate, facultyId;
+    private String title, description, topic, filePath, uploadDate, facultyId, facultyName;
 
-    public Documents(String id, String title, String description, String topic, String filePath, String uploadDate, String facultyId) {
+    public Documents(String id, String title, String description, String topic, String filePath, String uploadDate, String facultyId, String facultyName) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -18,6 +18,7 @@ public class Documents {
         this.filePath = filePath;
         this.uploadDate = uploadDate;
         this.facultyId = facultyId;
+        this.facultyName = facultyName;
     }
 
     public Documents() {
@@ -79,4 +80,8 @@ public class Documents {
     public void setFacultyId(String facultyId) {
         this.facultyId = facultyId;
     }
+
+    public String getFacultyName() { return facultyName; }
+
+    public void setFacultyName( String facultyName ){ this.facultyName = facultyName; }
 }
