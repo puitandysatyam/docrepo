@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Controller
@@ -56,9 +57,7 @@ public class DocumentController {
         }
 
         try {
-            System.out.println("--- [DEBUG] Starting file upload process ---");
 
-            // Sanitize the original filename to remove invalid characters
             String originalFilename = file.getOriginalFilename();
             String safeFilename = (originalFilename == null) ? "file" : originalFilename.replaceAll("[^a-zA-Z0-9._-]", "_");
             String uniqueFileName = user.getDepartment() + "_" + user.getFullName() + "_" + safeFilename;
@@ -78,6 +77,7 @@ public class DocumentController {
             document.setDescription(documentDto.getDescription());
             document.setTopic(documentDto.getTopic());
             document.setFacultyId(user.getId());
+            document.setFacultyName(user.getFullName());
             document.setFilePath(filePath.toString());
 
             document.setUploadDate(LocalDate.now().toString());
@@ -95,5 +95,15 @@ public class DocumentController {
         }
         redirectAttributes.addFlashAttribute("successMessage", "Document uploaded successfully!");
         return "redirect:/";
+    }
+
+    @GetMapping("/search")
+    public String searchDocuments(@RequestParam String query, Model model){
+
+        List<Documents> documents = documentRepo.searchByTopicTitleOrFaculty(query);
+        model.addAttribute("documents",documents);
+        model.addAttribute("pageTitle", "Search results for "+query);
+
+        return "document-list";
     }
 }
