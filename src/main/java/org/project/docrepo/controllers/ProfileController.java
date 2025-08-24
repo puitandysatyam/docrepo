@@ -1,7 +1,7 @@
 package org.project.docrepo.controllers;
 
 
-import org.project.docrepo.model.Document;
+import org.project.docrepo.model.Documents;
 import org.project.docrepo.model.User;
 import org.project.docrepo.services.DocumentService;
 import org.project.docrepo.services.UserService;
@@ -26,7 +26,7 @@ public class ProfileController {
 
         User faculty = userService.findUserById(id).orElse(null);
         model.addAttribute("faculty", faculty);
-        List<Document> documents = documentService.findDocById(id);
+        List<Documents> documents = documentService.findDocById(id);
         model.addAttribute("documents",documents);
 
         return "profile";

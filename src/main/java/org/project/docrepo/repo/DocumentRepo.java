@@ -1,14 +1,16 @@
 package org.project.docrepo.repo;
 
-import org.project.docrepo.model.Document;
+import org.project.docrepo.model.Documents;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface DocumentRepo extends MongoRepository<Document, String> {
-    List<Document> findByTitle(String title);
-    List<Document> findByFacultyId(String facultyId);
-    List<Document> findByTopic(String topic);
+@Repository
+public interface DocumentRepo extends MongoRepository<Documents, String> {
+    List<Documents> findByTitle(String title);
+    List<Documents> findByFacultyId(String facultyId);
+    List<Documents> findByTopic(String topic);
 
 
 }

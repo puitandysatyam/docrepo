@@ -1,15 +1,16 @@
 package org.project.docrepo.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@org.springframework.data.mongodb.core.mapping.Document(collection = "Document")
-public class Document {
+@Document(collection = "Document")
+public class Documents {
 
     @Id
     private String id;
     private String title, description, topic, filePath, uploadDate, facultyId;
 
-    public Document(String id, String title, String description, String topic, String filePath, String uploadDate, String facultyId) {
+    public Documents(String id, String title, String description, String topic, String filePath, String uploadDate, String facultyId) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -17,6 +18,10 @@ public class Document {
         this.filePath = filePath;
         this.uploadDate = uploadDate;
         this.facultyId = facultyId;
+    }
+
+    public Documents() {
+
     }
 
     public String getId() {

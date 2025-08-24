@@ -1,6 +1,6 @@
 package org.project.docrepo.services;
 
-import org.project.docrepo.model.Document;
+import org.project.docrepo.model.Documents;
 import org.project.docrepo.repo.DocumentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ public class DocumentService {
     @Autowired
     DocumentRepo documentRepo;
 
-    public List<Document> findDocById(String id){
+    public List<Documents> findDocById(String id){
 
         return documentRepo.findByFacultyId(id);
     }
