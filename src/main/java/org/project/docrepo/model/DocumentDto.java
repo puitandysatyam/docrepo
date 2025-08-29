@@ -6,7 +6,7 @@ public class DocumentDto {
 
     @NotBlank
     String title;
-    @NotBlank
+
     String description;
     @NotBlank
     String topic;
