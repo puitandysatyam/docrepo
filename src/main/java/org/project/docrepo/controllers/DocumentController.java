@@ -5,21 +5,19 @@ import org.project.docrepo.model.DocumentDto;
 import org.project.docrepo.model.Documents;
 import org.project.docrepo.model.User;
 import org.project.docrepo.repo.DocumentRepo;
+import org.project.docrepo.services.GoogleDriveService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,7 +25,9 @@ import java.util.List;
 @Controller
 public class DocumentController {
 
-    private static final String UPLOAD_DIR = "./uploads/";
+    @Autowired
+    GoogleDriveService googleDriveService;
+
     private final DocumentRepo documentRepo;
 
     public DocumentController(DocumentRepo documentRepo) {
@@ -45,32 +45,28 @@ public class DocumentController {
                                  BindingResult bindingResult,
                                  @RequestParam("file") MultipartFile file,
                                  @AuthenticationPrincipal User user,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 Model model) {
+
 
         if (bindingResult.hasErrors()) {
+            System.err.println("Validation errors found!");
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                System.err.println(error.getField() + " - " + error.getDefaultMessage());
+            }
             return "upload-form";
         }
-
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "Please select a file to upload!");
             return "redirect:/documents/upload";
         }
 
         try {
-
             String originalFilename = file.getOriginalFilename();
             String safeFilename = (originalFilename == null) ? "file" : originalFilename.replaceAll("[^a-zA-Z0-9._-]", "_");
             String uniqueFileName = user.getDepartment() + "_" + user.getFullName() + "_" + safeFilename;
 
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-            Path filePath = uploadPath.resolve(uniqueFileName);
-
-
-            if (Files.notExists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            Files.copy(file.getInputStream(), filePath);
+            String driveFileId = googleDriveService.uploadFile(file, uniqueFileName);
 
             Documents document = new Documents();
             document.setTitle(documentDto.getTitle());
@@ -78,21 +74,17 @@ public class DocumentController {
             document.setTopic(documentDto.getTopic());
             document.setFacultyId(user.getId());
             document.setFacultyName(user.getFullName());
-            document.setFilePath(filePath.toString());
-
+            document.setDriveFileId(driveFileId);
             document.setUploadDate(LocalDate.now().toString());
-
             documentRepo.save(document);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "Could not upload the file due to a file system error.");
-            return "redirect:/documents/upload";
-        } catch (Exception e) { // Catch any other unexpected errors
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("errorMessage", "An unexpected error occurred. Please check the logs.");
-            return "redirect:/documents/upload";
+            String errorMessage = "Upload failed: " + e.getMessage();
+            model.addAttribute("errorMessage", errorMessage);
+            return "upload-form";
         }
+
         redirectAttributes.addFlashAttribute("successMessage", "Document uploaded successfully!");
         return "redirect:/";
     }
