@@ -13,7 +13,7 @@ public class DocumentService {
     @Autowired
     DocumentRepo documentRepo;
 
-    public List<Documents> findDocById(String id){
+    public List<Documents> findDocByFacultyId(String id){
 
         return documentRepo.findByFacultyId(id);
     }
