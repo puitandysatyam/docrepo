@@ -1,20 +1,17 @@
 package org.project.docrepo.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+
+@Document(collection="DownloadRequest")
 public class DownloadRequest {
 
     @Id
     private String id;
-    private String documentId, studentId, facultyId, requestDate, status;
+    private String documentId, documentTitle, studentName, studentId, facultyName, facultyId, reason, requestDate, status;
 
-    public DownloadRequest(String id, String documentId, String studentId, String facultyId, String requestDate, String status) {
-        this.id = id;
-        this.documentId = documentId;
-        this.studentId = studentId;
-        this.facultyId = facultyId;
-        this.requestDate = requestDate;
-        this.status = status;
+    public DownloadRequest() {
     }
 
     public String getId() {
@@ -33,12 +30,28 @@ public class DownloadRequest {
         this.documentId = documentId;
     }
 
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
     public String getStudentId() {
         return studentId;
     }
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
+    }
+
+    public String getFacultyName() {
+        return facultyName;
+    }
+
+    public void setFacultyName(String facultyName) {
+        this.facultyName = facultyName;
     }
 
     public String getFacultyId() {
@@ -64,4 +77,13 @@ public class DownloadRequest {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getReason(){ return reason; }
+
+    public void setReason( String reason ){ this.reason = reason; }
+
+    public void setDocumentTitle(String documentTitle) {
+        this.documentTitle = documentTitle;
+    }
+     public String getDocumentTitle(){ return documentTitle; }
 }
