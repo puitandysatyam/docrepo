@@ -12,6 +12,7 @@
 
 <!-- Main Content -->
 <main class="flex-grow container mx-auto px-4 py-8">
+    <div th:replace="~{fragments :: notification_system}"></div>
 
     <div class="bg-white p-8 rounded-xl shadow-lg">
         <!--
@@ -32,7 +33,7 @@
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Card 1: View Profile -->
             <!-- This link now dynamically points to the user's own profile page -->
-            <a th:href="@{/profile/{id}(id=${currentUser.id})}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
+            <a th:href="@{/profile}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
                 <h3 class="font-bold text-lg text-gray-800">View My Profile</h3>
                 <p class="text-gray-600 mt-2">Update your details and profile image.</p>
             </a>
@@ -42,7 +43,7 @@
                 <p class="text-gray-600 mt-2">Share your latest publications and research materials.</p>
             </a>
             <!-- Card 3: View Download Requests -->
-            <a th:href="@{/requests/pending}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
+            <a th:href="@{/requests/review}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
                 <h3 class="font-bold text-lg text-gray-800">Review Download Requests</h3>
                 <p class="text-gray-600 mt-2">Approve or deny requests from students.</p>
             </a>
@@ -71,6 +72,22 @@
 
 <!-- Include the footer fragment -->
 <footer th:replace="~{fragments :: footer}"></footer>
+
+
+<script th:inline="javascript">
+    /* A small script to check for flash messages from the controller and show them */
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = /*[[${successMessage}]]*/ null;
+        const errorMessage = /*[[${errorMessage}]]*/ null;
+
+        if (successMessage) {
+            showNotification(successMessage, 'success');
+        }
+        if (errorMessage) {
+            showNotification(errorMessage, 'error');
+        }
+    });
+</script>
 
 </body>
 </html>
