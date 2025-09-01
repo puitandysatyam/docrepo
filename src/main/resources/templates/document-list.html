@@ -1,79 +1,47 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head th:replace="~{fragments :: common_head('Documents')}">
-  <!-- Head replaced by fragment -->
-</head>
+<head th:replace="~{fragments :: common_head('Documents')}"></head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
-
-<!-- Include the navigation bar fragment -->
 <nav th:replace="~{fragments :: navbar}"></nav>
 
-<!-- Main Content -->
 <main class="flex-grow container mx-auto px-4 py-8">
-  <div class="bg-white p-8 rounded-xl shadow-lg">
-
-    <!-- The title of this page will be passed from the controller -->
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
     <h1 class="text-3xl font-bold text-gray-800 mb-6" th:text="${pageTitle}">Document List</h1>
 
-    <!-- Conditional Message for No Documents Found -->
-    <div th:if="${#lists.isEmpty(documents)}" class="text-center py-12">
-      <p class="text-gray-500 text-lg">No documents found that match your criteria.</p>
+    <!-- Display success/error messages from redirects -->
+    <div th:if="${successMessage}" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg" role="alert">
+      <p th:text="${successMessage}"></p>
+    </div>
+    <div th:if="${errorMessage}" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+      <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- List of Documents -->
-    <!-- We will loop through the 'documents' list passed from the Spring controller -->
-    <div th:if="${not #lists.isEmpty(documents)}" class="space-y-4">
+    <!-- Message if no documents are found -->
+    <div th:if="${#lists.isEmpty(documents)}">
+      <p class="text-gray-500">No documents found.</p>
+    </div>
 
+    <!-- List of documents -->
+    <div th:unless="${#lists.isEmpty(documents)}" class="space-y-4">
       <!--
-        th:each iterates over the collection of documents.
-        'doc' is the variable for the current item in the loop.
-        'stat' is an optional status variable that gives loop info (like index).
+        KEY CHANGE: Each document is now a clickable <a> tag that links to the new detail page.
+        The URL is dynamically created using the document's ID.
       -->
-      <div th:each="doc, stat : ${documents}" class="border-b border-gray-200 pb-4">
-        <div class="flex flex-col md:flex-row justify-between md:items-center">
-          <div>
-            <h2 class="text-xl font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h2>
-            <p class="text-sm text-gray-500 mt-1">
-              By <span class="font-medium" th:text="${doc.facultyName}">Faculty Name</span> |
-              Topic: <span class="font-medium bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs" th:text="${doc.topic}">AI</span> |
-              Uploaded on <span th:text="${doc.uploadDate}">01-Jan-2024</span>
-            </p>
-            <p class="text-gray-600 mt-2" th:text="${doc.description}">A brief description of the document goes here...</p>
-          </div>
-
-          <div class="mt-4 md:mt-0 md:ml-6 flex-shrink-0">
-            <!--
-              STUDENT ACTION: Show "Request Download" button.
-              This form submits a POST request to the specific document's request URL.
-            -->
-            <form sec:authorize="hasRole('STUDENT')" th:action="@{/documents/{id}/request(id=${doc.id})}" method="post">
-              <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">
-                Request Download
-              </button>
-            </form>
-
-            <!--
-              FACULTY ACTION: Show "View Details" or "Edit" button for their own documents.
-              This checks if the logged-in user's ID matches the document's facultyId.
-            -->
-            <div sec:authorize="hasRole('FACULTY')">
-              <!-- Example: Check if the document belongs to the currently logged-in faculty -->
-              <a th:if="${#authentication.principal.id == doc.facultyId}" th:href="@{/documents/{id}(id=${doc.id})}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
-                View Details
-              </a>
-            </div>
-          </div>
+      <a th:each="doc : ${documents}"
+         th:href="@{/documents/{id}(id=${doc.id})}"
+         class="block p-4 border rounded-lg hover:bg-gray-50 transition duration-150 ease-in-out">
+        <div>
+          <h3 class="text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
+          <p class="text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
+          <p class="text-sm text-gray-500">Uploaded by: <span class="font-medium" th:text="${doc.facultyName}">Faculty Name</span></p>
         </div>
-      </div>
-
+      </a>
     </div>
   </div>
 </main>
 
-<!-- Include the footer fragment -->
 <footer th:replace="~{fragments :: footer}"></footer>
-
 </body>
 </html>
