@@ -1,5 +1,6 @@
 package org.project.docrepo.services;
 
+import org.project.docrepo.model.ProfileDTO;
 import org.project.docrepo.model.RegistrationDTO;
 import org.project.docrepo.model.User;
 import org.project.docrepo.repo.UserRepo;
@@ -35,6 +36,7 @@ public class UserService {
             newUser.setDepartment(registrationDTO.getDepartment());
             newUser.setRole(registrationDTO.getRole());
             newUser.setProfileImageUrl("https://placehold.co/400x400/EBF4FF/7F9CF5?text=Profile");
+            newUser.setProfileDescription("");
 
             userRepo.save(newUser);
         }
@@ -47,5 +49,20 @@ public class UserService {
 
     public List<User> findFacultyByDept(String deptName){
         return userRepo.findByDepartmentContainingIgnoreCaseAndRoleContaining(deptName,"FACULTY");
+    }
+
+    public void updateUser(User user, ProfileDTO profileDTO){
+        user.setFullName(profileDTO.getFullName());
+        user.setProfileDescription(profileDTO.getProfileDescription());
+        user.setDepartment(profileDTO.getDepartment());
+        user.setEmail(profileDTO.getEmail());
+        user.setProfileImageUrl(profileDTO.getProfileImageUrl());
+
+        userRepo.save(user);
+
+    }
+
+    public void save(User user) {
+        userRepo.save(user);
     }
 }
