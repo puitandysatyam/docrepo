@@ -10,9 +10,14 @@
     <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Your Profile</h1>
 
-        <!-- The form is bound to the 'profileUpdateDto' object from the controller.
-             th:field will automatically populate the value of each input. -->
-        <form th:action="@{/profile/update}" th:object="${profileDto}" method="post" class="space-y-6">
+        <!-- This section will display any error messages sent from the controller -->
+        <div th:if="${errorMessage}" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+            <p class="font-bold">An error occurred:</p>
+            <p th:text="${errorMessage}">Error details will be shown here.</p>
+        </div>
+
+        <!-- The form now includes enctype="multipart/form-data" which is essential for file uploads -->
+        <form th:action="@{/profile/update}" th:object="${profileDto}" method="post" enctype="multipart/form-data" class="space-y-6">
 
             <!-- Full Name Field -->
             <div>
@@ -41,11 +46,12 @@
                 <textarea id="profileDescription" th:field="*{profileDescription}" rows="6" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
             </div>
 
-            <!-- NEW: Profile Image URL Field -->
+            <!-- Profile Picture File Input -->
             <div>
-                <label for="profileImageUrl" class="block text-sm font-medium text-gray-700">Profile Image URL</label>
-                <input type="url" id="profileImageUrl" th:field="*{profileImageUrl}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="https://example.com/your-image.jpg">
-                <p th:if="${#fields.hasErrors('profileImageUrl')}" th:errors="*{profileImageUrl}" class="text-red-500 text-xs mt-1"></p>
+                <label for="profileImageFile" class="block text-sm font-medium text-gray-700">New Profile Picture (Optional)</label>
+                <p class="text-xs text-gray-500 mb-1">If you upload a new image, it will replace your current one.</p>
+                <!-- The 'name' attribute must match the @RequestParam in your controller -->
+                <input type="file" id="profileImageFile" name="profileImageFile" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
             </div>
 
             <!-- Submit Button -->
@@ -61,3 +67,4 @@
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>
+

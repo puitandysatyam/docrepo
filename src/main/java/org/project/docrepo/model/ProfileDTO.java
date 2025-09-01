@@ -15,18 +15,8 @@ public class ProfileDTO {
     @NotBlank
     String department;
 
-    @NotBlank
-    String profileImageUrl;
 
     public ProfileDTO() {
-    }
-
-    public String getProfileImageUrl() {
-        return profileImageUrl;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
     }
 
     public String getProfileDescription() {
