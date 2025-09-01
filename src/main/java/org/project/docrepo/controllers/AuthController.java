@@ -2,6 +2,9 @@ package org.project.docrepo.controllers;
 
 import org.project.docrepo.model.RegistrationDTO;
 import org.project.docrepo.services.UserService;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,11 +25,23 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated()) {
+
+            return "redirect:/";
+        }
 
         return "login";
     }
     @GetMapping("/register/student")
     public String showStudentRegistrationForm(Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated()) {
+
+            return "redirect:/";
+        }
         RegistrationDTO newUserDTO = new RegistrationDTO();
         newUserDTO.setRole("STUDENT");
         model.addAttribute("userDto", newUserDTO);
@@ -37,6 +52,12 @@ public class AuthController {
 
     @GetMapping("/register/faculty")
     public String showFacultyRegistrationForm(Model model){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated()) {
+
+            return "redirect:/";
+        }
         RegistrationDTO newUserDTO = new RegistrationDTO();
         newUserDTO.setRole("FACULTY");
         model.addAttribute("userDto", newUserDTO);
