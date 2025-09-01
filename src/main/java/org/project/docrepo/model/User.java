@@ -6,27 +6,51 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList; // <-- Import this
 import java.util.Collection;
 import java.util.List;
-
 
 @Document(collection = "User")
 public class User implements UserDetails {
 
     @Id
     String id;
-    String fullName,  email, password, role, department, profileImageUrl;
+
+    String fullName;
+    String email;
+    String password;
+    String role;
+    String department;
+    String profileImageUrl;
+    String profileDescription;
+    private List<String> allowedDocumentsId = new ArrayList<>();
+
     public User() {
     }
 
-    public User(String id, String fullName, String email, String password, String role, String department, String profileImageUrl) {
-        this.id = id;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.department = department;
-        this.profileImageUrl = profileImageUrl;
+    public List<String> getAllowedDocumentsId() {
+        return allowedDocumentsId;
+    }
+
+    public void setAllowedDocumentsId(List<String> allowedDocumentsId) {
+        this.allowedDocumentsId = allowedDocumentsId;
+    }
+
+    public void addAllowedDocument(String documentId) {
+        if (this.allowedDocumentsId == null) {
+            this.allowedDocumentsId = new ArrayList<>();
+        }
+        if (!this.allowedDocumentsId.contains(documentId)) {
+            this.allowedDocumentsId.add(documentId);
+        }
+    }
+
+    public String getProfileDescription() {
+        return profileDescription;
+    }
+
+    public void setProfileDescription(String profileDescription) {
+        this.profileDescription = profileDescription;
     }
 
     public String getId() {
@@ -77,18 +101,22 @@ public class User implements UserDetails {
         this.department = department;
     }
 
-    public String getProfileImageUrl(){ return profileImageUrl; }
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
 
-    public void setProfileImageUrl( String profileImageUrl){ this.profileImageUrl = profileImageUrl; }
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+this.role));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role));
     }
 
     @Override
     public String getUsername() {
-        return this.fullName;
+        return this.email;
     }
 
     @Override
