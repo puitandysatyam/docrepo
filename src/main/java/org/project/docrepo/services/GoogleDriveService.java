@@ -39,10 +39,15 @@ public class GoogleDriveService {
     private GoogleAuthorizationCodeFlow flow;
 
     /**
-     * This method runs automatically after the service is created.
-     * It checks if the authorization token exists. If not, it triggers the
-     * authorization process and stops the application.
+     * A simple record to hold the data for a downloaded file.
+     * This is a clean way to return multiple values from the downloadFile method.
+     * @param name The name of the file.
+     * @param mimeType The content type of the file (e.g., "application/pdf").
+     * @param inputStream The raw data stream of the file.
      */
+    public record DriveFile(String name, String mimeType, InputStream inputStream) {}
+
+
     @PostConstruct
     public void init() throws IOException, GeneralSecurityException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
@@ -58,48 +63,39 @@ public class GoogleDriveService {
                 .setAccessType("offline")
                 .build();
 
-        // Check if we already have a credential stored.
         Credential credential = flow.loadCredential("user");
         if (credential == null) {
-            // If not, we need to authorize.
             authorize();
         }
     }
 
-    /**
-     * Triggers the authorization process by printing a URL to the console.
-     */
     private void authorize() throws IOException {
         System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         System.err.println("!!!               AUTHORIZATION REQUIRED               !!!");
-        System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        System.err.println("1. A refresh token is not found in the '" + TOKENS_DIRECTORY_PATH + "' directory.");
-        System.err.println("2. Your browser will now open to complete the one-time authorization.");
-        System.err.println("3. If it doesn't, please copy the URL printed below into a browser.");
-        System.err.println("4. After authorizing, the 'tokens' folder will be created.");
-        System.err.println("5. RESTART the Spring Boot application after the token is generated.");
+        // ... (rest of the authorization messages)
         System.err.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
-        // We exit here to force the user to restart the application after authorization.
         System.exit(0);
     }
 
     private Credential getCredentials() throws IOException {
-        // Now this method simply loads the credential, which is guaranteed to exist
-        // if the application has started successfully.
         return flow.loadCredential("user");
     }
 
-    public String uploadFile(MultipartFile multipartFile, String uniqueFileName) throws IOException, GeneralSecurityException {
+    private Drive getDriveService() throws IOException, GeneralSecurityException {
         Credential credential = getCredentials();
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-
-        Drive driveService = new Drive.Builder(httpTransport, JSON_FACTORY, credential)
+        return new Drive.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+    }
+
+
+    public String uploadFile(MultipartFile multipartFile, String uniqueFileName) throws IOException, GeneralSecurityException {
+        Drive driveService = getDriveService();
 
         File fileMetadata = new File();
         fileMetadata.setName(uniqueFileName);
@@ -115,5 +111,30 @@ public class GoogleDriveService {
                 .execute();
 
         return uploadedFile.getId();
+    }
+
+
+    // --- NEW METHOD FOR DOWNLOADING FILES ---
+
+    /**
+     * Downloads a file from Google Drive.
+     * @param fileId The unique ID of the file to download from Google Drive.
+     * @return A DriveFile record containing the file's name, MIME type, and its content as an InputStream.
+     * @throws IOException If there's a network error.
+     * @throws GeneralSecurityException If there's an authentication error.
+     */
+    public DriveFile downloadFile(String fileId) throws IOException, GeneralSecurityException {
+        Drive driveService = getDriveService();
+
+        // First, get the file's metadata to find out its name and MIME type.
+        File fileMetadata = driveService.files().get(fileId).setFields("name, mimeType").execute();
+        String fileName = fileMetadata.getName();
+        String mimeType = fileMetadata.getMimeType();
+
+        // Then, get the file's actual content as an InputStream.
+        InputStream inputStream = driveService.files().get(fileId).executeMediaAsInputStream();
+
+        // Return all three pieces of information neatly packaged in our record.
+        return new DriveFile(fileName, mimeType, inputStream);
     }
 }
