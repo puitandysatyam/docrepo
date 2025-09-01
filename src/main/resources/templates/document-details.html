@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments :: common_head('Document Details')}"></head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<!-- Custom Notification for the Copy Easter Egg -->
+<div id="copy-notification" class="fixed top-5 right-5 bg-indigo-600 text-white py-2 px-4 rounded-lg shadow-lg transition-all duration-300 opacity-0 pointer-events-none" style="z-index: 100;">
+    Copied a secret message to your clipboard! 😉
+</div>
+
+<main class="flex-grow container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Document Information Section -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h1 class="text-3xl font-bold text-gray-900" th:text="${document.title}">Document Title</h1>
+            <p class="text-lg text-gray-600 mt-2">
+                Published by <a th:href="@{/browse/{dept}/{facultyId}(dept=${faculty.department}, facultyId=${faculty.id})}"
+                                class="text-indigo-600 hover:underline"
+                                th:text="${faculty.fullName}">Faculty Name</a>
+            </p>
+            <p class="mt-4 text-gray-700" th:text="${document.description}">Document description goes here.</p>
+        </div>
+
+        <!-- PDF Preview Section -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Document Preview</h2>
+            <div class="relative w-full" style="padding-top: 141.42%;">
+                <iframe th:src="${previewUrl}" class="absolute top-0 left-0 w-full h-full border-0" allow="fullscreen"></iframe>
+            </div>
+        </div>
+
+        <!-- Request/Download Section -->
+        <div th:if="${currentUser != null && currentUser.id != document.facultyId}" class="bg-white p-8 rounded-xl shadow-lg">
+            <!-- CASE 1: User IS APPROVED to download the document -->
+            <div th:if="${currentUser.allowedDocumentsId.contains(document.id)}">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Download Approved</h2>
+                <p class="text-gray-600 mb-4">Your request for this document has been approved. You can now download the file.</p>
+                <a th:href="@{/documents/{id}/download(id=${document.id})}"
+                   class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Download Now
+                </a>
+            </div>
+
+            <!-- CASE 2: User has NOT been approved yet -->
+            <div th:unless="${currentUser.allowedDocumentsId.contains(document.id)}">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Request Download</h2>
+                <form th:action="@{/documents/{docId}/request(docId=${document.id})}" method="post">
+                    <div>
+                        <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Request (Optional)</label>
+                        <textarea id="reason" name="reason" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., For my research on AI ethics..."></textarea>
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: notification_system}"></div>
+
+<script th:inline="javascript">
+    // --- NEW AND IMPROVED EASTER EGG SCRIPT ---
+    document.addEventListener('copy', function(e) {
+        // Get the element that the user is trying to copy from.
+        const targetElement = e.target;
+
+        // Check if the user is copying from an input or textarea.
+        // If so, do nothing and allow the normal copy to proceed.
+        if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        // If they are copying from anywhere else, trigger the easter egg!
+        const funnyMessage = "Haha! You thought you could copy this, but you found an easter egg instead! Happy researching! 😄 - From the DocRepo Team";
+
+        // This is the magic part: it intercepts the copy event and replaces
+        // the clipboard's content with your custom message.
+        e.clipboardData.setData('text/plain', funnyMessage);
+
+        // This prevents the browser from performing the default copy action.
+        e.preventDefault();
+
+        // Show our custom notification
+        const notification = document.getElementById('copy-notification');
+        if (notification) {
+            notification.classList.remove('opacity-0', 'pointer-events-none'); // Make it visible AND interactive
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'pointer-events-none'); // Make it invisible AND non-interactive again
+            }, 3000);
+        }
+    });
+</script>
+
+</body>
+</html>
