@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head th:replace="~{fragments :: common_head('Faculty Profile')}">
-  <!-- Head replaced by fragment -->
-</head>
+<head th:replace="~{fragments :: common_head('My Profile')}"></head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
 
@@ -12,50 +10,61 @@
 
 <!-- Main Content -->
 <main class="flex-grow container mx-auto px-4 py-8">
-  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
-    <div class="md:flex">
-      <!-- Profile Image Section -->
-      <div class="md:flex-shrink-0">
-        <img class="h-48 w-full object-cover md:h-full md:w-48"
-             th:src="${faculty.profileImageUrl}"
-             alt="Profile picture"
-             onerror="this.onerror=null; this.src='https://placehold.co/400x400/EBF4FF/7F9CF5?text=No+Image';">
-      </div>
-
-      <!-- Profile Details Section -->
-      <div class="p-8">
-        <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold" th:text="${'Department of ' + faculty.department}">
-          Department of Computer Science
+  <div th:replace="~{fragments :: notification_system}"></div>
+  <div class="max-w-4xl mx-auto">
+    <!-- Profile Details Section -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div class="md:flex">
+        <!-- Profile Image Section -->
+        <div class="md:flex-shrink-0">
+          <img class="h-48 w-full object-cover md:h-full md:w-64"
+               th:src="${faculty.profileImageUrl}"
+               alt="Profile picture"
+               onerror="this.onerror=null; this.src='https://placehold.co/400x600/EBF4FF/7F9CF5?text=No+Image';">
         </div>
-        <h1 class="block mt-1 text-3xl leading-tight font-bold text-black" th:text="${faculty.fullName}">
-          Dr. Ada Lovelace
-        </h1>
-        <p class="mt-4 text-gray-600">
-          Email: <a th:href="'mailto:' + ${faculty.email}" class="text-indigo-600 hover:underline" th:text="${faculty.email}">ada.lovelace@university.edu</a>
-        </p>
 
-        <!-- Placeholder for bio or other info -->
-        <p class="mt-4 text-gray-500">
-          Further details and a professional biography can be displayed here. This section can be expanded to include research interests, office hours, and more.
-        </p>
+        <!-- Profile Info Section -->
+        <div class="p-8 flex flex-col justify-between">
+          <div>
+            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold" th:text="${'Department of ' + faculty.department}">
+              Department of Computer Science
+            </div>
+            <h1 class="block mt-1 text-3xl leading-tight font-bold text-black" th:text="${faculty.fullName}">
+              Your Full Name
+            </h1>
+            <p class="mt-2 text-gray-600">
+              Email: <a th:href="'mailto:' + ${faculty.email}" class="text-indigo-600 hover:underline" th:text="${faculty.email}">your.email@university.edu</a>
+            </p>
+            <p class="mt-4 text-gray-500" th:text="${faculty.profileDescription}">
+              Your professional biography and research interests will appear here.
+            </p>
+          </div>
+          <!-- Edit Profile Button -->
+          <div class="mt-6">
+            <a th:href="@{/profile/edit}" class="inline-block px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors">
+              Edit Profile
+            </a>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Section for the faculty's documents -->
-  <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Published Documents</h2>
+    <!-- Published Documents Section -->
+    <div class="bg-white p-8 rounded-xl shadow-lg mt-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">My Published Documents</h2>
 
-    <!-- Message if no documents are found -->
-    <div th:if="${#lists.isEmpty(documents)}">
-      <p class="text-gray-500">This faculty member has not uploaded any documents yet.</p>
-    </div>
+      <!-- Message if no documents are found -->
+      <div th:if="${#lists.isEmpty(documents)}">
+        <p class="text-gray-500">You have not uploaded any documents yet.</p>
+      </div>
 
-    <!-- List of documents -->
-    <div th:unless="${#lists.isEmpty(documents)}" class="space-y-4">
-      <div th:each="doc : ${documents}" class="border-b last:border-b-0 pb-4">
-        <h3 class="text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
-        <p class="text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
+      <!-- List of documents -->
+      <div th:unless="${#lists.isEmpty(documents)}" class="space-y-4">
+        <div th:each="doc : ${documents}" class="border-b last:border-b-0 pb-4">
+          <h3 class="text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
+          <p class="text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
+          <p class="text-xs text-gray-400 mt-2">Uploaded on: <span th:text="${doc.uploadDate}"></span></p>
+        </div>
       </div>
     </div>
   </div>
@@ -63,6 +72,19 @@
 
 <!-- Include the footer fragment -->
 <footer th:replace="~{fragments :: footer}"></footer>
+<script th:inline="javascript">
+  /* A small script to check for flash messages from the controller and show them */
+  document.addEventListener('DOMContentLoaded', function() {
+    const successMessage = /*[[${successMessage}]]*/ null;
+    const errorMessage = /*[[${errorMessage}]]*/ null;
 
+    if (successMessage) {
+      showNotification(successMessage, 'success');
+    }
+    if (errorMessage) {
+      showNotification(errorMessage, 'error');
+    }
+  });
+</script>
 </body>
 </html>
