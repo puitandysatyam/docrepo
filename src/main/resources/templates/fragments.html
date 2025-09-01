@@ -7,8 +7,6 @@
 
 <!-- ===================================================================================== -->
 <!-- Navigation Bar Fragment                                                               -->
-<!-- This fragment defines the navigation bar that will appear on top of every page.       -->
-<!-- It uses Spring Security's Thymeleaf extras to show different links based on user role.-->
 <!-- ===================================================================================== -->
 <nav th:fragment="navbar" class="bg-gray-800 text-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,21 +27,19 @@
                     <a th:href="@{/}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Home</a>
                     <a th:href="@{/departments}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Departments</a>
 
-                    <!-- FACULTY ONLY LINK: Show the "Upload" link only if the user has the 'FACULTY' role -->
+                    <!-- FACULTY ONLY: Upload and Review links -->
                     <a sec:authorize="hasRole('FACULTY')" th:href="@{/documents/upload}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Upload Document</a>
+                    <a sec:authorize="hasRole('FACULTY')" th:href="@{/requests/review}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Review Requests</a>
 
-                    <!-- STUDENT ONLY LINK: Show "My Requests" for students -->
-                    <a sec:authorize="hasRole('STUDENT')" th:href="@{/requests/my-requests}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">My Requests</a>
+                    <!-- ALL LOGGED-IN USERS: My Requests link -->
+                    <a sec:authorize="isAuthenticated()" th:href="@{/requests/my-requests}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">My Requests</a>
                 </div>
             </div>
 
             <!-- User Info and Logout -->
             <div class="hidden md:block">
                 <div class="ml-4 flex items-center md:ml-6">
-                    <!-- Display username if logged in -->
                     <span class="mr-3" sec:authentication="name">Username</span>
-
-                    <!-- Logout Form -->
                     <form th:action="@{/logout}" method="post">
                         <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
                     </form>
@@ -56,31 +52,84 @@
 
 <!-- ===================================================================================== -->
 <!-- Footer Fragment                                                                       -->
-<!-- A simple footer to be included at the bottom of every page.                           -->
 <!-- ===================================================================================== -->
 <footer th:fragment="footer" class="bg-gray-800 text-white mt-auto">
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm">
-        &copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> Faculty Document Repository. All Rights Reserved.
+        &copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> Faculty Document Repository by Department of Information Technology. All Rights Reserved.
     </div>
 </footer>
 
 
 <!-- ===================================================================================== -->
 <!-- Head Content Fragment                                                                 -->
-<!-- This includes common head elements like meta tags, Tailwind CSS, and a default title. -->
-<!-- It accepts a 'title' parameter to set the page-specific title.                      -->
 <!-- ===================================================================================== -->
 <head th:fragment="common_head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' - FacultyRepo'">Default Title</title>
-    <!-- Tailwind CSS from CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
+
+<!-- ====================================================== -->
+<!-- Global Notification System Fragment                    -->
+<!-- ====================================================== -->
+<div th:fragment="notification_system">
+    <!-- This style block defines the animation for our notification -->
+    <style>
+        #global-notification {
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+        #global-notification.notification-active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+
+    <!-- The Notification Toast Element -->
+    <div id="global-notification"
+         class="fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white"
+         style="z-index: 1000;">
+        <p id="notification-message">Your message here</p>
+    </div>
+
+    <!-- The JavaScript to control the notification -->
+    <script th:inline="javascript">
+        // A global function to show notifications
+        function showNotification(message, type) {
+            const notification = document.getElementById('global-notification');
+            const messageElement = document.getElementById('notification-message');
+
+            if (notification && messageElement) {
+                // Set the message
+                messageElement.textContent = message;
+
+                // Set the color based on type
+                notification.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
+                if (type === 'success') {
+                    notification.classList.add('bg-green-500');
+                } else if (type === 'error') {
+                    notification.classList.add('bg-red-500');
+                } else {
+                    notification.classList.add('bg-blue-500');
+                }
+
+                // Show the notification by adding the active class
+                notification.classList.add('notification-active');
+
+                // Set a timer to hide it again
+                setTimeout(() => {
+                    notification.classList.remove('notification-active');
+                }, 4000); // Visible for 4 seconds
+            }
+        }
+    </script>
+</div>
 
 </body>
 </html>
