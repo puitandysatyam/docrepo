@@ -50,20 +50,27 @@
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-red-500 text-xs mt-1"></p>
             </div>
 
-            <!-- Department -->
+            <!-- KEY CHANGE: Department is now a dropdown select menu -->
             <div>
-                <label for="department" class="sr-only">Department</label>
-                <input id="department" th:field="*{department}" type="text" required
-                       class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                       placeholder="Department (e.g., Computer Science)">
+                <label for="department" class="block text-sm font-medium text-gray-700 mb-1">Select Your Department</label>
+                <select id="department" th:field="*{department}" required
+                        class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="" disabled>-- Please choose a department --</option>
+                    <!--
+                      Thymeleaf will loop through the 'departments' list provided by the controller.
+                      For each department object, it creates an <option>.
+                    -->
+                    <option th:each="dept : ${departments}"
+                            th:value="${dept.name}"
+                            th:text="${dept.name}">
+                        Department Name
+                    </option>
+                </select>
                 <p th:if="${#fields.hasErrors('department')}" th:errors="*{department}" class="text-red-500 text-xs mt-1"></p>
             </div>
 
-            <!--
-              KEY CHANGE: The role is now a hidden field.
-              Its value is set by the controller based on the URL visited.
-              The user cannot see or change this.
-            -->
+
+            <!-- The role is a hidden field, set by the controller -->
             <input type="hidden" th:field="*{role}" />
 
             <div>
