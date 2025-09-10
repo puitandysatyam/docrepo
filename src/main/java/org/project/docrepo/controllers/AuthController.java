@@ -1,6 +1,8 @@
 package org.project.docrepo.controllers;
 
+import org.project.docrepo.model.Department;
 import org.project.docrepo.model.RegistrationDTO;
+import org.project.docrepo.services.DepartmentService;
 import org.project.docrepo.services.UserService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,13 +16,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @Controller
 public class AuthController {
 
     private final UserService userService;
+    private final DepartmentService departmentService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, DepartmentService departmentService) {
         this.userService = userService;
+        this.departmentService = departmentService;
     }
 
     @GetMapping("/login")
@@ -44,8 +50,10 @@ public class AuthController {
         }
         RegistrationDTO newUserDTO = new RegistrationDTO();
         newUserDTO.setRole("STUDENT");
+        List<Department> departments = departmentService.showDepartments();
         model.addAttribute("userDto", newUserDTO);
         model.addAttribute("pageTitle", "Student Registration");
+        model.addAttribute("departments", departments);
         return "register";
 
     }
@@ -60,8 +68,10 @@ public class AuthController {
         }
         RegistrationDTO newUserDTO = new RegistrationDTO();
         newUserDTO.setRole("FACULTY");
+        List<Department> departments = departmentService.showDepartments();
         model.addAttribute("userDto", newUserDTO);
         model.addAttribute("pageTitle", "Faculty Registration");
+        model.addAttribute("departments", departments);
         return "register";
     }
 
