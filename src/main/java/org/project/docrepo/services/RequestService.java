@@ -73,4 +73,9 @@ public class RequestService {
         request.setStatus("DENIED");
         requestRepository.save(request);
     }
+
+    public void deleteRequestByDocId(String id) throws Exception{
+
+        requestRepository.deleteDownloadRequestByDocumentIdContaining(id);
+    }
 }

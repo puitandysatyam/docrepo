@@ -6,6 +6,7 @@ import org.project.docrepo.model.Documents;
 import org.project.docrepo.model.User;
 import org.project.docrepo.repo.DocumentRepo;
 import org.project.docrepo.services.GoogleDriveService;
+import org.project.docrepo.services.RequestService;
 import org.project.docrepo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -35,6 +36,8 @@ public class DocumentController {
     private final DocumentRepo documentRepo;
     @Autowired
     private UserService userService;
+    @Autowired
+    private RequestService requestService;
 
     public DocumentController(DocumentRepo documentRepo) {
         this.documentRepo = documentRepo;
@@ -164,6 +167,28 @@ public class DocumentController {
             // If anything goes wrong (e.g., file not found on Google Drive), we print the error and return an error status.
             e.printStackTrace();
             return ResponseEntity.status(500).build();
+        }
+    }
+
+    @GetMapping("/documents/{id}/delete")
+    public String showDeleteConfirmation(@PathVariable String id, Model model){
+
+        Documents doc =  documentRepo.findById(id).orElse(null);
+        model.addAttribute("document", doc);
+        return "delete-confirm";
+
+    }
+
+    @PostMapping("/documents/{id}/delete")
+    public String deleteDocument(@PathVariable String id, RedirectAttributes redirectAttributes){
+        try{
+            documentRepo.deleteById(id);
+            requestService.deleteRequestByDocId(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Successfully deleted the document.");
+            return "redirect:/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("Error deleting the document. Please try again later.");
+            return "redirct:/profile";
         }
     }
 }

@@ -14,4 +14,6 @@ public interface DownloadRequestRepo extends MongoRepository<DownloadRequest,Str
     List<DownloadRequest> findAllByFacultyIdContainingAndStatus(String facultyId, String status);
 
     List<DownloadRequest> findAllByFacultyIdContainingAndStatusNotContaining(String facultyId, String status);
+
+    void deleteDownloadRequestByDocumentIdContaining(String id);
 }

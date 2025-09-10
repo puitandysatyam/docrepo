@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: common_head('Confirm Deletion')}"></head>
+
+<body class="bg-gray-100 flex flex-col min-h-screen">
+<nav th:replace="~{fragments :: navbar}"></nav>
+
+<main class="flex-grow container mx-auto px-4 py-8">
+    <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+        <h1 class="text-2xl font-bold text-red-600 mb-4">Confirm Deletion</h1>
+        <p class="text-gray-700 mb-2">Are you sure you want to permanently delete the following document?</p>
+
+        <!-- The document's title is displayed so the user is certain about what they are deleting. -->
+        <p class="text-lg font-semibold text-gray-900 mb-6" th:text="${document.title}">Document Title Here</p>
+
+        <p class="text-sm text-gray-500 mb-6">This action cannot be undone. All associated download requests will also be removed.</p>
+
+        <!--
+          This form performs the actual deletion.
+          - It submits a POST request to the delete endpoint.
+          - The hidden '_method' input tells Spring Boot to treat this as a DELETE request,
+            which is the correct and secure standard for a destructive action.
+        -->
+        <form th:action="@{/documents/{id}/delete(id=${document.id})}" method="post" class="flex justify-center space-x-4">
+            <input type="hidden" name="_method" value="DELETE" />
+
+            <!-- The "Cancel" button is a simple link back to the safety of the profile page. -->
+            <a th:href="@{/profile}" class="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm hover:bg-gray-300">
+                Cancel
+            </a>
+
+            <!-- The "Yes, Delete" button submits the form, triggering the secure backend deletion process. -->
+            <button type="submit" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-sm hover:bg-red-700">
+                Yes, Delete
+            </button>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

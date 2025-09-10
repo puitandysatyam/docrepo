@@ -60,10 +60,24 @@
 
       <!-- List of documents -->
       <div th:unless="${#lists.isEmpty(documents)}" class="space-y-4">
-        <div th:each="doc : ${documents}" class="border-b last:border-b-0 pb-4">
-          <h3 class="text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
-          <p class="text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
-          <p class="text-xs text-gray-400 mt-2">Uploaded on: <span th:text="${doc.uploadDate}"></span></p>
+        <!-- KEY CHANGES ARE INSIDE THIS LOOP -->
+        <div th:each="doc : ${documents}" class="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center">
+          <!-- Document Info (now a flex item) -->
+          <div class="flex-grow">
+            <!-- 1. The document title is now a clickable link -->
+            <a th:href="@{/documents/{id}(id=${doc.id})}" class="hover:underline">
+              <h3 class="text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
+            </a>
+            <p class="text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
+            <p class="text-xs text-gray-400 mt-2">Uploaded on: <span th:text="${doc.uploadDate}"></span></p>
+          </div>
+          <!-- Action Buttons -->
+          <div class="mt-4 md:mt-0 flex space-x-2 self-end md:self-center">
+            <!-- 2. The new Delete button -->
+            <a th:href="@{/documents/{id}/delete(id=${doc.id})}" class="px-3 py-2 bg-red-500 text-white text-xs font-semibold rounded-md hover:bg-red-600">
+              Delete
+            </a>
+          </div>
         </div>
       </div>
     </div>
