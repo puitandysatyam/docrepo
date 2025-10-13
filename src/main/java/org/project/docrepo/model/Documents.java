@@ -8,14 +8,14 @@ public class Documents {
 
     @Id
     private String id;
-    private String title, description, topic, driveFileId, uploadDate, facultyId, facultyName;
+    private String title, description, topic, fileUrl, uploadDate, facultyId, facultyName;
 
-    public Documents(String id, String title, String description, String topic, String driveFileId, String uploadDate, String facultyId, String facultyName) {
+    public Documents(String id, String title, String description, String topic, String fileUrl, String uploadDate, String facultyId, String facultyName) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.topic = topic;
-        this.driveFileId = driveFileId;
+        this.fileUrl = fileUrl;
         this.uploadDate = uploadDate;
         this.facultyId = facultyId;
         this.facultyName = facultyName;
@@ -57,12 +57,12 @@ public class Documents {
         this.topic = topic;
     }
 
-    public String getDriveFileId() {
-        return driveFileId;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setDriveFileId(String driveFileId) {
-        this.driveFileId = driveFileId;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public String getUploadDate() {
