@@ -6,11 +6,6 @@
 <body class="bg-gray-100 flex flex-col min-h-screen">
 <nav th:replace="~{fragments :: navbar}"></nav>
 
-<!-- Custom Notification for the Copy Easter Egg -->
-<div id="copy-notification" class="fixed top-5 right-5 bg-indigo-600 text-white py-2 px-4 rounded-lg shadow-lg transition-all duration-300 opacity-0 pointer-events-none" style="z-index: 100;">
-    Copied a secret message to your clipboard! 😉
-</div>
-
 <main class="flex-grow container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <!-- Document Information Section -->
@@ -26,13 +21,24 @@
 
         <!-- PDF Preview Section -->
         <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Document Preview</h2>
-            <div class="relative w-full" style="padding-top: 141.42%;">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Read-Only Preview</h2>
+
+            <!--
+              FINAL, CORRECTED SOLUTION:
+              1. The outer div is now a simple container. The 'h-[80vh]' and 'overflow-y-scroll' classes have been removed.
+              2. The 'relative' div with padding provides the correct aspect ratio for the iframe.
+              3. The transparent overlay is placed on top, stopping just short of the right edge to allow the main browser scrollbar to function.
+              This is the cleanest and most effective solution.
+            -->
+            <div class="relative border border-gray-200 rounded-lg" style="padding-top: 141.42%;">
+                <!-- The iframe displays the PDF preview -->
                 <iframe th:src="${previewUrl}" class="absolute top-0 left-0 w-full h-full border-0" allow="fullscreen"></iframe>
+                <!-- This transparent overlay sits on top, blocking all interactions but leaving the main browser scrollbar accessible. -->
+                <div class="absolute top-0 left-0 right-4 bottom-0"></div>
             </div>
         </div>
 
-        <!-- Request/Download Section -->
+        <!-- Request/Download Section (your existing logic is perfect here) -->
         <div th:if="${currentUser != null && currentUser.id != document.facultyId}" class="bg-white p-8 rounded-xl shadow-lg">
             <!-- CASE 1: User IS APPROVED to download the document -->
             <div th:if="${currentUser.allowedDocumentsId.contains(document.id)}">
@@ -66,38 +72,16 @@
 <footer th:replace="~{fragments :: footer}"></footer>
 <div th:replace="~{fragments :: notification_system}"></div>
 
+<!-- Script to show flash messages from the controller -->
 <script th:inline="javascript">
-    // --- NEW AND IMPROVED EASTER EGG SCRIPT ---
-    document.addEventListener('copy', function(e) {
-        // Get the element that the user is trying to copy from.
-        const targetElement = e.target;
-
-        // Check if the user is copying from an input or textarea.
-        // If so, do nothing and allow the normal copy to proceed.
-        if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA') {
-            return;
-        }
-
-        // If they are copying from anywhere else, trigger the easter egg!
-        const funnyMessage = "Haha! You thought you could copy this, but you found an easter egg instead! Happy researching! 😄 - From the DocRepo Team";
-
-        // This is the magic part: it intercepts the copy event and replaces
-        // the clipboard's content with your custom message.
-        e.clipboardData.setData('text/plain', funnyMessage);
-
-        // This prevents the browser from performing the default copy action.
-        e.preventDefault();
-
-        // Show our custom notification
-        const notification = document.getElementById('copy-notification');
-        if (notification) {
-            notification.classList.remove('opacity-0', 'pointer-events-none'); // Make it visible AND interactive
-            setTimeout(() => {
-                notification.classList.add('opacity-0', 'pointer-events-none'); // Make it invisible AND non-interactive again
-            }, 3000);
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = /*[[${successMessage}]]*/ null;
+        const errorMessage = /*[[${errorMessage}]]*/ null;
+        if (successMessage) { showNotification(successMessage, 'success'); }
+        if (errorMessage) { showNotification(errorMessage, 'error'); }
     });
 </script>
 
 </body>
 </html>
+
