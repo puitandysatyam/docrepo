@@ -15,7 +15,7 @@ COPY src ./src
 RUN mvn -B -f pom.xml -DskipTests package
 
 # ───── Stage 2: Run with JRE 21 ─────
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copy the Spring Boot JAR from the build stage
