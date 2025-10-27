@@ -6,63 +6,93 @@
 <body class="bg-gray-100 flex flex-col min-h-screen">
 <nav th:replace="~{fragments :: navbar}"></nav>
 
+<!-- Main content adjusts padding -->
 <main class="flex-grow container mx-auto px-4 py-8">
-    <!-- Pending Requests Section -->
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Review Pending Requests</h1>
+    <div th:replace="~{fragments :: notification_system}"></div>
+    <div class="max-w-4xl mx-auto">
+        <!-- Pending Requests Section - Adjusts padding -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+            <!-- Responsive heading size -->
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Review Pending Requests</h1>
 
-        <div th:if="${#lists.isEmpty(pendingRequests)}">
-            <p class="text-gray-500">You have no pending download requests to review.</p>
-        </div>
+            <!-- Responsive text size -->
+            <div th:if="${#lists.isEmpty(pendingRequests)}" class="text-center py-6">
+                <p class="text-gray-500 text-sm sm:text-base">You have no pending download requests to review.</p>
+            </div>
 
-        <div th:unless="${#lists.isEmpty(pendingRequests)}" class="space-y-6">
-            <!-- Loop through pending requests -->
-            <div th:each="request : ${pendingRequests}" class="border p-4 rounded-lg shadow-sm">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h2 class="text-xl font-semibold text-indigo-700" th:text="${request.documentTitle}">Document Title</h2>
-                        <p class="text-sm text-gray-600">
-                            Requested by <span class="font-medium" th:text="${request.studentName}">Student Name</span>
-                            on <span th:text="${request.requestDate}">27-Aug-2025</span>
-                        </p>
+            <!-- Responsive spacing -->
+            <div th:unless="${#lists.isEmpty(pendingRequests)}" class="space-y-4 sm:space-y-6">
+                <!-- Loop through pending requests -->
+                <!-- Card padding adjusts -->
+                <div th:each="request : ${pendingRequests}" class="border p-4 rounded-lg shadow-sm">
+                    <!--
+                      Responsive layout:
+                      - flex-col: Stacks details and buttons vertically on mobile.
+                      - sm:flex-row: Switches to horizontal layout on small screens+.
+                    -->
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-start">
+                        <!-- Request Details - Adjusts text size and margin -->
+                        <div class="flex-grow mb-3 sm:mb-0 sm:mr-4">
+                            <h2 class="text-lg sm:text-xl font-semibold text-indigo-700" th:text="${request.documentTitle}">Document Title</h2>
+                            <p class="text-xs sm:text-sm text-gray-600">
+                                Requested by <span class="font-medium" th:text="${request.studentName}">Student Name</span>
+                                on <span th:text="${request.requestDate}">27-Aug-2025</span>
+                            </p>
+                        </div>
+                        <!--
+                          Action Buttons:
+                          - flex-col: Stacks buttons vertically on mobile.
+                          - space-y-2: Adds space between buttons on mobile.
+                          - sm:flex-row: Switches to horizontal layout.
+                          - sm:space-y-0 / sm:space-x-2: Adjusts spacing for horizontal layout.
+                          - w-full sm:w-auto: Makes buttons full-width on mobile.
+                        -->
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 flex-shrink-0 w-full sm:w-auto">
+                            <form th:action="@{/requests/{id}/deny(id=${request.id})}" method="post" class="w-full sm:w-auto">
+                                <button type="submit" class="w-full sm:w-auto px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full hover:bg-red-600 transition-colors">Deny</button>
+                            </form>
+                            <form th:action="@{/requests/{id}/approve(id=${request.id})}" method="post" class="w-full sm:w-auto">
+                                <button type="submit" class="w-full sm:w-auto px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:bg-green-600 transition-colors">Approve</button>
+                            </form>
+                        </div>
                     </div>
-                    <div class="flex space-x-2 flex-shrink-0 ml-4">
-                        <form th:action="@{/requests/{id}/approve(id=${request.id})}" method="post">
-                            <button type="submit" class="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:bg-green-600">Approve</button>
-                        </form>
-                        <form th:action="@{/requests/{id}/deny(id=${request.id})}" method="post">
-                            <button type="submit" class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full hover:bg-red-600">Deny</button>
-                        </form>
+                    <!-- Reason section - Adjusts text size -->
+                    <div th:if="${request.reason != null && !#strings.isEmpty(request.reason)}" class="mt-3 p-3 bg-gray-50 rounded-md border text-xs sm:text-sm">
+                        <p class="font-medium text-gray-800">Reason provided:</p>
+                        <p class="text-gray-600 italic" th:text="${request.reason}">"I need this for my research project..."</p>
                     </div>
-                </div>
-                <div th:if="${request.reason != null && !request.reason.isEmpty()}" class="mt-3 p-3 bg-gray-50 rounded-md border">
-                    <p class="text-sm font-medium text-gray-800">Reason provided:</p>
-                    <p class="text-sm text-gray-600 italic" th:text="${request.reason}">"I need this for my research project..."</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- NEW: Recently Processed Requests Section (Collapsible) -->
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg mt-8">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-800">Recently Processed Requests</h2>
-            <button id="toggle-processed-btn" class="text-sm text-indigo-600 hover:underline">Show</button>
-        </div>
+    <!-- NEW: Recently Processed Requests Section (Collapsible) - Adjusts padding -->
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg mt-8">
+        <!--
+          KEY CHANGE:
+          1. Removed 'onclick' attribute.
+          2. Added 'id="toggle-processed-btn"' so the script can find it.
+        -->
+        <button id="toggle-processed-btn" class="w-full flex justify-between items-center text-left mb-4 focus:outline-none">
+            <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 inline-block">Recently Processed Requests</h2>
+            <span id="processed-arrow" class="text-indigo-600 text-xl">&#9660;</span> <!-- Down arrow -->
+        </button>
 
         <!-- This list is hidden by default and will be toggled by the button -->
-        <div id="processed-requests-list" class="hidden space-y-4">
+        <!-- Responsive card layout -->
+        <div id="processed-requests-list" class="hidden space-y-4 pt-4 border-t">
+            <!-- Responsive text size -->
             <div th:if="${#lists.isEmpty(processedRequests)}">
-                <p class="text-gray-500">No requests have been processed recently.</p>
+                <p class="text-gray-500 text-sm sm:text-base">No requests have been processed recently.</p>
             </div>
+            <!-- Responsive text size -->
             <div th:unless="${#lists.isEmpty(processedRequests)}" th:each="request : ${processedRequests}" class="border p-4 rounded-lg bg-gray-50">
-                <h3 class="text-lg font-semibold text-gray-700" th:text="${request.documentTitle}">Document Title</h3>
-                <p class="text-sm text-gray-600">
-                    Requested by <span class="font-medium" th:text="${request.studentName}">Student Name</span>
-                    on <span th:text="${request.requestDate}">27-Aug-2025</span>
-                </p>
-                <!-- Show the final status of the request -->
-                <p class="text-sm mt-2">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-1">
+                    <h3 class="text-base font-medium text-gray-600 mb-1 sm:mb-0" th:text="${request.documentTitle}">Document Title</h3>
+                    <span class="text-xs text-gray-400" th:text="'Requested on: ' + ${request.requestDate}">Date</span>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-500 mb-1">Requested by: <span class="font-medium" th:text="${request.studentName}">Student Name</span></p>
+                <p class="text-xs sm:text-sm mt-1">
                     Status:
                     <span th:if="${request.status == 'APPROVED'}" class="font-bold text-green-600">Approved</span>
                     <span th:if="${request.status == 'DENIED'}" class="font-bold text-red-600">Denied</span>
@@ -80,10 +110,13 @@
     document.addEventListener('DOMContentLoaded', function() {
         const successMessage = /*[[${successMessage}]]*/ null;
         const errorMessage = /*[[${errorMessage}]]*/ null;
-        if (successMessage) { showNotification(successMessage, 'success'); }
-        if (errorMessage) { showNotification(errorMessage, 'error'); }
+        if (typeof showNotification === 'function') {
+            if (successMessage) { showNotification(successMessage, 'success'); }
+            if (errorMessage) { showNotification(errorMessage, 'error'); }
+        }
 
-        // NEW: Script for the collapsible section
+        // Script for the collapsible section
+        // This script will now correctly find the button by its new ID.
         const toggleBtn = document.getElementById('toggle-processed-btn');
         const processedList = document.getElementById('processed-requests-list');
         if (toggleBtn && processedList) {
@@ -91,10 +124,11 @@
                 const isHidden = processedList.classList.contains('hidden');
                 if (isHidden) {
                     processedList.classList.remove('hidden');
-                    toggleBtn.textContent = 'Hide';
+                    // This query works because the span is a child of the button.
+                    toggleBtn.querySelector('#processed-arrow').innerHTML = '&#9650;'; // Up arrow
                 } else {
                     processedList.classList.add('hidden');
-                    toggleBtn.textContent = 'Show';
+                    toggleBtn.querySelector('#processed-arrow').innerHTML = '&#9660;'; // Down arrow
                 }
             });
         }
@@ -103,3 +137,4 @@
 
 </body>
 </html>
+

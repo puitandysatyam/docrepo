@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <!-- This file is not meant to be displayed directly. It holds reusable UI components. -->
+    <!-- Placeholder: Content is provided by the common_head fragment -->
 </head>
 <body>
 
 <!-- ===================================================================================== -->
-<!-- Navigation Bar Fragment                                                               -->
+<!-- Navigation Bar Fragment (Responsive)                                                  -->
 <!-- ===================================================================================== -->
 <nav th:fragment="navbar" class="bg-gray-800 text-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <!-- Logo and Site Title -->
+            <!-- Logo and Site Title (Always visible) -->
             <div class="flex-shrink-0">
                 <a th:href="@{/}" class="flex items-center space-x-2">
                     <svg class="h-8 w-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,32 +21,78 @@
                 </a>
             </div>
 
-            <!-- Main Navigation Links -->
-            <div class="hidden md:block">
+            <!-- Main Navigation Links (Hidden on small/medium screens, visible on large+) -->
+            <div class="hidden lg:block">
                 <div class="ml-10 flex items-baseline space-x-4">
-                    <a th:href="@{/}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Home</a>
-                    <a th:href="@{/departments}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Departments</a>
-
-                    <!-- FACULTY ONLY: Upload and Review links -->
-                    <a sec:authorize="hasRole('FACULTY')" th:href="@{/documents/upload}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Upload Document</a>
-                    <a sec:authorize="hasRole('FACULTY')" th:href="@{/requests/review}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">Review Requests</a>
-
-                    <!-- ALL LOGGED-IN USERS: My Requests link -->
-                    <a sec:authorize="isAuthenticated()" th:href="@{/requests/my-requests}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">My Requests</a>
+                    <a th:href="@{/}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">Home</a>
+                    <a th:href="@{/departments}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">Departments</a>
+                    <a sec:authorize="hasRole('FACULTY')" th:href="@{/documents/upload}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">Upload</a>
+                    <a sec:authorize="isAuthenticated()" th:href="@{/requests/my-requests}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">My Requests</a>
+                    <a sec:authorize="hasRole('FACULTY')" th:href="@{/requests/review}" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors">Review Requests</a>
                 </div>
             </div>
 
-            <!-- User Info and Logout -->
-            <div class="hidden md:block">
-                <div class="ml-4 flex items-center md:ml-6">
-                    <span class="mr-3" sec:authentication="name">Username</span>
+            <!-- User Info and Logout (Hidden on small/medium screens, visible on large+) -->
+            <div class="hidden lg:block">
+                <!-- KEY CHANGE: Replaced text with profile image -->
+                <div class="ml-4 flex items-center lg:ml-6">
+                    <!--
+                      This link now displays the user's profile picture.
+                      We use Spring Security's integration to get the 'profileImageUrl'
+                      directly from the authenticated principal (your User object).
+                    -->
+                    <a th:href="@{/profile}" class="flex items-center mr-3 rounded-full hover:ring-2 hover:ring-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all">
+                        <img class="h-8 w-8 rounded-full object-cover border-2 border-gray-600"
+                             th:src="${#authentication.principal.profileImageUrl}"
+                             alt="My Profile"
+                             onerror="this.onerror=null; this.src='https://placehold.co/40x40/EBF4FF/7F9CF5?text=User';">
+                    </a>
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium">Logout</button>
+                        <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">Logout</button>
                     </form>
                 </div>
             </div>
+
+            <!-- Mobile Menu Button (Visible on small/medium, hidden on large+) -->
+            <div class="-mr-2 flex lg:hidden">
+                <button type="button" class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white" aria-controls="mobile-menu" aria-expanded="false" onclick="toggleMobileMenu()">
+                    <span class="sr-only">Open main menu</span>
+                    <svg id="menu-icon-closed" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                    <svg id="menu-icon-open" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Mobile menu content, toggled by JS (Hidden on large+) -->
+    <div class="lg:hidden hidden" id="mobile-menu">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <a th:href="@{/}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors">Home</a>
+            <a th:href="@{/departments}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors">Departments</a>
+            <a sec:authorize="hasRole('FACULTY')" th:href="@{/documents/upload}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors">Upload</a>
+            <a sec:authorize="isAuthenticated()" th:href="@{/requests/my-requests}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors">My Requests</a>
+            <a sec:authorize="hasRole('FACULTY')" th:href="@{/requests/review}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors">Review Requests</a>
+            <a th:href="@{/profile}" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700 transition-colors">My Profile</a>
+        </div>
+        <div class="pt-4 pb-3 border-t border-gray-700">
+            <div class="px-2 space-y-1">
+                <form th:action="@{/logout}" method="post" class="block w-full text-left">
+                    <button type="submit" class="block w-full px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-gray-700 hover:text-white transition-colors">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+            document.getElementById('menu-icon-open').classList.toggle('hidden');
+            document.getElementById('menu-icon-closed').classList.toggle('hidden');
+        }
+    </script>
 </nav>
 
 
@@ -54,8 +100,8 @@
 <!-- Footer Fragment                                                                       -->
 <!-- ===================================================================================== -->
 <footer th:fragment="footer" class="bg-gray-800 text-white mt-auto">
-    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm">
-        &copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> Faculty Document Repository by Department of Information Technology. All Rights Reserved.
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-xs sm:text-sm">
+        &copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Faculty Document Repository by Department of Information Technology. All Rights Reserved.
     </div>
 </footer>
 
@@ -71,45 +117,45 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        @keyframes slideDownFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUpFadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        .notification-active {
+            animation: slideDownFadeIn 0.5s ease-out forwards;
+            pointer-events: auto !important;
+        }
+        #global-notification {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none !important;
+            transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+        }
     </style>
 </head>
 
 <!-- ====================================================== -->
-<!-- Global Notification System Fragment                    -->
+<!-- Global Notification System Fragment (Responsive)       -->
 <!-- ====================================================== -->
 <div th:fragment="notification_system">
-    <!-- This style block defines the animation for our notification -->
-    <style>
-        #global-notification {
-            transform: translateY(-100px);
-            opacity: 0;
-            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
-        }
-        #global-notification.notification-active {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    </style>
-
-    <!-- The Notification Toast Element -->
     <div id="global-notification"
-         class="fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white"
+         class="fixed top-4 left-4 right-4 sm:left-auto sm:right-5 sm:max-w-sm p-4 rounded-lg shadow-lg text-white"
          style="z-index: 1000;">
         <p id="notification-message">Your message here</p>
     </div>
 
-    <!-- The JavaScript to control the notification -->
     <script th:inline="javascript">
-        // A global function to show notifications
-        function showNotification(message, type) {
+        let notificationTimeout;
+        function showNotification(message, type = 'info') {
             const notification = document.getElementById('global-notification');
             const messageElement = document.getElementById('notification-message');
-
             if (notification && messageElement) {
-                // Set the message
+                if(notificationTimeout) { clearTimeout(notificationTimeout); }
                 messageElement.textContent = message;
-
-                // Set the color based on type
                 notification.classList.remove('bg-green-500', 'bg-red-500', 'bg-blue-500');
                 if (type === 'success') {
                     notification.classList.add('bg-green-500');
@@ -118,14 +164,11 @@
                 } else {
                     notification.classList.add('bg-blue-500');
                 }
-
-                // Show the notification by adding the active class
                 notification.classList.add('notification-active');
-
-                // Set a timer to hide it again
-                setTimeout(() => {
+                notificationTimeout = setTimeout(() => {
                     notification.classList.remove('notification-active');
-                }, 4000); // Visible for 4 seconds
+                    notificationTimeout = null;
+                }, 4000);
             }
         }
     </script>
@@ -133,3 +176,4 @@
 
 </body>
 </html>
+

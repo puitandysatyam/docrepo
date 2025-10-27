@@ -6,50 +6,61 @@
 <body class="bg-gray-100 flex flex-col min-h-screen">
 <nav th:replace="~{fragments :: navbar}"></nav>
 
+<!-- Main content adjusts padding -->
 <main class="flex-grow container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">My Download Requests</h1>
+    <!-- Main card container adjusts padding -->
+    <div class="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+        <!-- Responsive heading size -->
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">My Download Requests</h1>
 
-        <!-- Message if no requests have been made -->
-        <div th:if="${#lists.isEmpty(requests)}">
-            <p class="text-gray-500">You have not made any download requests yet.</p>
+        <!-- Message if no requests have been made - Adjust text size -->
+        <div th:if="${#lists.isEmpty(requests)}" class="text-center py-6">
+            <p class="text-gray-500 text-sm sm:text-base">You have not made any download requests yet.</p>
         </div>
 
-        <!-- Table of requests -->
-        <div th:unless="${#lists.isEmpty(requests)}" class="overflow-x-auto">
+        <!--
+          Responsive Table Container:
+          - overflow-x-auto: This is the key. It allows the table to scroll horizontally on small screens.
+          - rounded-lg border: Adds nice styling to the container.
+        -->
+        <div th:unless="${#lists.isEmpty(requests)}" class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full bg-white">
                 <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Title</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <!-- Adjust table header padding and text size -->
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Title</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                 <tr th:each="request : ${requests}">
-                    <!-- KEY CHANGE: The document title is now a clickable link -->
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <!-- Adjust table cell padding and text size -->
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        <!-- KEY CHANGE: The document title is now a clickable link -->
                         <a th:href="@{/documents/{id}(id=${request.documentId})}"
                            class="text-indigo-600 hover:text-indigo-900 hover:underline"
                            th:text="${request.documentTitle}">
                             On Computable Numbers
                         </a>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${request.requestDate}">
+                    <!-- Responsive text size -->
+                    <td class="px-4 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500" th:text="${request.requestDate}">
                         27-Aug-2025
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <!-- Color-coded status badges -->
+                    <!-- Responsive text size for badges -->
+                    <td class="px-4 py-4 whitespace-nowrap text-xs">
+                        <!-- Color-coded status badges - adjusted padding/font for consistency -->
                         <span th:if="${request.status == 'PENDING'}"
-                              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              class="px-2.5 py-0.5 inline-flex leading-4 font-semibold rounded-full bg-yellow-100 text-yellow-800">
                                 Pending
                             </span>
                         <span th:if="${request.status == 'APPROVED'}"
-                              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                              class="px-2.5 py-0.5 inline-flex leading-4 font-semibold rounded-full bg-green-100 text-green-800">
                                 Approved
                             </span>
                         <span th:if="${request.status == 'DENIED'}"
-                              class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                              class="px-2.5 py-0.5 inline-flex leading-4 font-semibold rounded-full bg-red-100 text-red-800">
                                 Denied
                             </span>
                     </td>

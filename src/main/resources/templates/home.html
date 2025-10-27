@@ -10,42 +10,53 @@
 <!-- Include the navigation bar fragment -->
 <nav th:replace="~{fragments :: navbar}"></nav>
 
-<!-- Main Content -->
+<!-- Main Content - Adjust padding -->
 <main class="flex-grow container mx-auto px-4 py-8">
     <div th:replace="~{fragments :: notification_system}"></div>
 
-    <div class="bg-white p-8 rounded-xl shadow-lg">
-        <!--
-          This now uses the 'currentUser' object passed from the controller.
-          It's more flexible than using sec:authentication.
-        -->
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">
-            Welcome!!, <span th:text="${currentUser.fullName}" class="text-indigo-600">User FullName</span>!
+    <!-- Welcome Section - Adjust padding and text size -->
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+            Welcome, <span th:text="${currentUser.fullName}" class="text-indigo-600">User FullName</span>!
         </h1>
-        <p class="text-gray-600" th:text="${'Department of ' + currentUser.department}">Department of Computer Science</p>
+        <p class="text-sm sm:text-base text-gray-600" th:text="${'Department of ' + currentUser.department}">Department of Computer Science</p>
     </div>
 
     <!-- ================================================== -->
     <!--      CONTENT FOR FACULTY MEMBERS                   -->
     <!-- ================================================== -->
     <div sec:authorize="hasRole('FACULTY')" class="mt-8">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Faculty Dashboard</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Card 1: View Profile -->
-            <!-- This link now dynamically points to the user's own profile page -->
-            <a th:href="@{/profile}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
-                <h3 class="font-bold text-lg text-gray-800">View My Profile</h3>
-                <p class="text-gray-600 mt-2">Update your details and profile image.</p>
+        <!-- Responsive heading size -->
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4">Faculty Dashboard</h2>
+        <!--
+          Responsive Grid:
+          - grid-cols-1: Default to 1 column (mobile).
+          - md:grid-cols-2: Switch to 2 columns on medium screens (tablets) and up.
+          - lg:grid-cols-3: Switch to 3 columns on large screens (desktops) and up.
+          - gap-4 sm:gap-6: Adjust spacing.
+        -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <!-- Card 1: View Profile - Adjust padding and text size -->
+            <a th:href="@{/profile}" class="block p-4 sm:p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
+                <h3 class="font-bold text-base sm:text-lg text-gray-800">View My Profile</h3>
+                <p class="text-gray-600 mt-2 text-xs sm:text-sm">Update your details and profile image.</p>
             </a>
-            <!-- Card 2: Upload Document -->
-            <a th:href="@{/documents/upload}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
-                <h3 class="font-bold text-lg text-gray-800">Upload a New Document</h3>
-                <p class="text-gray-600 mt-2">Share your latest publications and research materials.</p>
+            <!-- Card 2: Upload Document - Adjust padding and text size -->
+            <a th:href="@{/documents/upload}" class="block p-4 sm:p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
+                <h3 class="font-bold text-base sm:text-lg text-gray-800">Upload a New Document</h3>
+                <p class="text-gray-600 mt-2 text-xs sm:text-sm">Share your latest publications and research materials.</p>
             </a>
-            <!-- Card 3: View Download Requests -->
-            <a th:href="@{/requests/review}" class="block p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
-                <h3 class="font-bold text-lg text-gray-800">Review Download Requests</h3>
-                <p class="text-gray-600 mt-2">Approve or deny requests from students.</p>
+            <!-- Card 3: View Download Requests - Adjust padding and text size -->
+            <a th:href="@{/requests/review}" class="block p-4 sm:p-6 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-base sm:text-lg text-gray-800">Review Download Requests</h3>
+                    <!-- Ensure badge count exists before trying to display -->
+                    <span th:if="${pendingRequestCount != null && pendingRequestCount > 0}"
+                          th:text="${pendingRequestCount}"
+                          class="ml-2 flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6 bg-red-500 text-white text-xs font-bold rounded-full">
+                    </span>
+                </div>
+                <p class="text-gray-600 mt-2 text-xs sm:text-sm">Approve or deny requests from students.</p>
             </a>
         </div>
     </div>
@@ -54,15 +65,28 @@
     <!--      CONTENT FOR STUDENTS                          -->
     <!-- ================================================== -->
     <div sec:authorize="hasRole('STUDENT')" class="mt-8">
-        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Student Dashboard</h2>
+        <!-- Responsive heading size -->
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-700 mb-4">Student Dashboard</h2>
+        <!-- Adjust padding -->
         <div class="p-6 bg-white rounded-lg shadow">
-            <h3 class="font-bold text-lg text-gray-800">Explore Documents</h3>
-            <p class="text-gray-600 mt-2">You can start by browsing documents by department or searching for specific topics or faculty members using the navigation bar above.</p>
+            <!-- Responsive text size -->
+            <h3 class="font-bold text-base sm:text-lg text-gray-800">Explore Documents</h3>
+            <p class="text-gray-600 mt-2 text-sm sm:text-base">You can start by browsing documents by department or searching for specific topics or faculty members using the navigation bar above.</p>
 
             <div class="mt-6">
-                <form th:action="@{/search}" method="get" class="flex items-center">
-                    <input type="text" name="query" placeholder="Search by topic, title, or faculty name..." class="w-full px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-r-md hover:bg-indigo-700">Search</button>
+                <!--
+                    Responsive Search Form:
+                    - flex-col: Stack input and button vertically on mobile.
+                    - sm:flex-row: Switch to horizontal layout on small screens and up.
+                    - Adjust margins/padding and border radius for different layouts.
+                -->
+                <form th:action="@{/search}" method="get" class="flex flex-col sm:flex-row items-center">
+                    <input type="text" name="query" placeholder="Search by topic, title, or faculty name..."
+                           class="w-full sm:flex-grow px-4 py-2 border border-gray-300 rounded-md sm:rounded-l-md sm:rounded-r-none focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2 sm:mb-0">
+                    <button type="submit"
+                            class="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2 rounded-md sm:rounded-r-md sm:rounded-l-none hover:bg-indigo-700 transition-colors">
+                        Search
+                    </button>
                 </form>
             </div>
         </div>
@@ -80,11 +104,13 @@
         const successMessage = /*[[${successMessage}]]*/ null;
         const errorMessage = /*[[${errorMessage}]]*/ null;
 
-        if (successMessage) {
-            showNotification(successMessage, 'success');
-        }
-        if (errorMessage) {
-            showNotification(errorMessage, 'error');
+        if (typeof showNotification === 'function') {
+            if (successMessage) {
+                showNotification(successMessage, 'success');
+            }
+            if (errorMessage) {
+                showNotification(errorMessage, 'error');
+            }
         }
     });
 </script>

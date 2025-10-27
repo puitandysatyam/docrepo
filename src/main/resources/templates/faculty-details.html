@@ -7,52 +7,57 @@
 
 <nav th:replace="~{fragments :: navbar}"></nav>
 
+<!-- Main content adjusts padding -->
 <main class="flex-grow container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
 
-        <!-- Faculty Profile Section -->
-        <div class="bg-white p-8 rounded-xl shadow-lg mb-8 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
-            <!-- Profile Image -->
-            <img th:src="${faculty.profileImageUrl}"
-                 onerror="this.onerror=null; this.src='https://placehold.co/400x400/EBF4FF/7F9CF5?text=Profile';"
-                 alt="Profile Picture"
-                 class="w-40 h-40 rounded-full object-cover border-4 border-indigo-300 shadow-md">
+        <!-- Faculty Profile Section - Adjusts padding -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+            <!-- Responsive layout: stacks vertically on mobile, row on medium+ -->
+            <div class="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
+                <!-- Profile Image - Adjusts size -->
+                <img th:src="${faculty.profileImageUrl}"
+                     onerror="this.onerror=null; this.src='https://placehold.co/400x400/EBF4FF/7F9CF5?text=Profile';"
+                     alt="Profile Picture"
+                     class="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-indigo-300 shadow-md flex-shrink-0">
 
-            <!-- Profile Details -->
-            <div class="text-center md:text-left">
-                <h1 class="text-3xl font-bold text-gray-800" th:text="${faculty.fullName}">Dr. Alan Turing</h1>
-                <p class="text-lg text-indigo-600 font-semibold" th:text="${faculty.department}">Computer Science</p>
-                <p class="text-md text-gray-500 mt-2" th:text="${faculty.email}">alan.turing@bletchley.ac.uk</p>
-                <!-- Profile Description -->
-                <p class="text-gray-600 mt-4 text-sm" th:text="${faculty.profileDescription}">A short bio or description about the faculty member's research interests and background.</p>
+                <!-- Profile Details - Adjusts text alignment and size -->
+                <div class="text-center md:text-left">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800" th:text="${faculty.fullName}">Dr. Alan Turing</h1>
+                    <p class="text-base sm:text-lg text-indigo-600 font-semibold" th:text="${faculty.department}">Computer Science</p>
+                    <p class="text-sm sm:text-md text-gray-500 mt-2" th:text="${faculty.email}">alan.turing@bletchley.ac.uk</p>
+                    <!-- Profile Description - Adjusts text size -->
+                    <p class="text-gray-600 mt-4 text-xs sm:text-sm" th:text="${faculty.profileDescription ?: 'No description provided.'}">A short bio or description...</p>
+                </div>
             </div>
         </div>
 
 
-        <!-- Published Documents Section -->
-        <div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-200 pb-2">Published Documents</h2>
+        <!-- Published Documents Section - Adjusts padding -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mt-8">
+            <!-- Responsive heading size -->
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-200 pb-2">Published Documents</h2>
 
-            <!-- Message if no documents are found -->
-            <div th:if="${#lists.isEmpty(documents)}" class="text-center bg-white p-8 rounded-xl shadow-lg">
-                <p class="text-gray-600 text-lg">This faculty member has not uploaded any documents yet.</p>
+            <!-- Message if no documents are found - Adjusts text size -->
+            <div th:if="${#lists.isEmpty(documents)}" class="text-center bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <p class="text-gray-600 text-sm sm:text-lg">This faculty member has not uploaded any documents yet.</p>
             </div>
 
-            <!-- Loop through each document -->
-            <div th:if="${not #lists.isEmpty(documents)}" class="space-y-6">
-                <!--
-                  KEY CHANGE: Each document card is now wrapped in an <a> tag.
-                  This makes the entire card a clickable link to the document's detail page.
-                  The request button has been removed from this view for a cleaner UI.
-                -->
+            <!-- Loop through each document - Adjusts spacing -->
+            <div th:if="${not #lists.isEmpty(documents)}" class="space-y-4 sm:space-y-6">
+                <!-- Document Card - Adjusts padding -->
                 <a th:each="doc : ${documents}" th:href="@{/documents/{id}(id=${doc.id})}"
-                   class="block bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl hover:border-indigo-300 transition-all duration-300">
-                    <div class="flex flex-col md:flex-row justify-between md:items-center mb-2">
-                        <h3 class="text-xl font-bold text-indigo-600" th:text="${doc.title}">Document Title</h3>
-                        <span class="text-sm text-gray-500 mt-2 md:mt-0" th:text="'Uploaded on: ' + ${doc.uploadDate}">Upload Date</span>
+                   class="block bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl hover:border-indigo-300 transition-all duration-300">
+                    <!-- Responsive layout for title/date -->
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-2">
+                        <!-- Responsive text size -->
+                        <h3 class="text-lg sm:text-xl font-bold text-indigo-600 mb-1 sm:mb-0" th:text="${doc.title}">Document Title</h3>
+                        <span class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-0" th:text="'Uploaded on: ' + ${doc.uploadDate}">Upload Date</span>
                     </div>
-                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mb-4" th:text="${doc.topic}">Topic</span>
-                    <p class="text-gray-700" th:text="${doc.description}">Document description goes here...</p>
+                    <!-- Responsive badge size -->
+                    <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs sm:text-sm font-semibold text-gray-700 mb-3 sm:mb-4" th:text="${doc.topic}">Topic</span>
+                    <!-- Responsive text size -->
+                    <p class="text-gray-700 text-sm" th:text="${doc.description}">Document description goes here...</p>
                 </a>
             </div>
         </div>

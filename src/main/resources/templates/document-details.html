@@ -8,58 +8,65 @@
 
 <main class="flex-grow container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
-        <!-- Document Information Section -->
-        <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
-            <h1 class="text-3xl font-bold text-gray-900" th:text="${document.title}">Document Title</h1>
-            <p class="text-lg text-gray-600 mt-2">
+        <!-- Document Information Section - Responsive Padding & Text -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900" th:text="${document.title}">Document Title</h1>
+            <p class="text-base sm:text-lg text-gray-600 mt-2">
                 Published by <a th:href="@{/browse/{dept}/{facultyId}(dept=${faculty.department}, facultyId=${faculty.id})}"
                                 class="text-indigo-600 hover:underline"
                                 th:text="${faculty.fullName}">Faculty Name</a>
             </p>
-            <p class="mt-4 text-gray-700" th:text="${document.description}">Document description goes here.</p>
+            <p class="mt-4 text-sm sm:text-base text-gray-700" th:text="${document.description}">Document description goes here.</p>
         </div>
 
-        <!-- PDF Preview Section -->
-        <div class="bg-white p-8 rounded-xl shadow-lg mb-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Read-Only Preview</h2>
+        <!-- PDF Preview Section (Hidden on Mobile) -->
+        <div class="hidden md:block bg-white p-6 sm:p-8 rounded-xl shadow-lg mb-8">
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Read-Only Preview</h2>
 
-            <!--
-              FINAL, CORRECTED SOLUTION:
-              1. The outer div is now a simple container. The 'h-[80vh]' and 'overflow-y-scroll' classes have been removed.
-              2. The 'relative' div with padding provides the correct aspect ratio for the iframe.
-              3. The transparent overlay is placed on top, stopping just short of the right edge to allow the main browser scrollbar to function.
-              This is the cleanest and most effective solution.
-            -->
-            <div class="relative border border-gray-200 rounded-lg" style="padding-top: 141.42%;">
-                <!-- The iframe displays the PDF preview -->
-                <iframe th:src="${previewUrl}" class="absolute top-0 left-0 w-full h-full border-0" allow="fullscreen"></iframe>
-                <!-- This transparent overlay sits on top, blocking all interactions but leaving the main browser scrollbar accessible. -->
-                <div class="absolute top-0 left-0 right-4 bottom-0"></div>
+            <div class="relative w-full h-[80vh] border border-gray-200 rounded-lg overflow-hidden">
+                <iframe th:src="${previewUrl}" class="w-full h-full border-0" allow="fullscreen"></iframe>
+                <!-- The responsive overlay still sits on top, blocking clicks on desktop -->
+                <div class="hidden md:block absolute top-0 left-0 right-4 bottom-0"></div>
             </div>
         </div>
 
-        <!-- Request/Download Section (your existing logic is perfect here) -->
-        <div th:if="${currentUser != null && currentUser.id != document.facultyId}" class="bg-white p-8 rounded-xl shadow-lg">
-            <!-- CASE 1: User IS APPROVED to download the document -->
+        <!-- Mobile-Only Note (Visible on Mobile) -->
+        <div class="md:hidden bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl shadow-lg mb-8 text-center text-sm">
+            <p class->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                Document preview is only supported on desktop browsers (e.g., on a PC or Mac).
+            </p>
+        </div>
+
+
+        <!--
+          Request/Download Section
+          This section is visible on all devices, providing a clear
+          call-to-action for mobile users.
+        -->
+        <div th:if="${currentUser != null && currentUser.id != document.facultyId}" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <!-- CASE 1: Download Approved -->
             <div th:if="${currentUser.allowedDocumentsId.contains(document.id)}">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Download Approved</h2>
-                <p class="text-gray-600 mb-4">Your request for this document has been approved. You can now download the file.</p>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Download Approved</h2>
+                <p class="text-gray-600 mb-4 text-sm sm:text-base">Your request was approved. Download the file now.</p>
                 <a th:href="@{/documents/{id}/download(id=${document.id})}"
-                   class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                   class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                     Download Now
                 </a>
             </div>
 
-            <!-- CASE 2: User has NOT been approved yet -->
+            <!-- CASE 2: Request Download -->
             <div th:unless="${currentUser.allowedDocumentsId.contains(document.id)}">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Request Download</h2>
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Request Download</h2>
                 <form th:action="@{/documents/{docId}/request(docId=${document.id})}" method="post">
                     <div>
-                        <label for="reason" class="block text-sm font-medium text-gray-700">Reason for Request (Optional)</label>
-                        <textarea id="reason" name="reason" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., For my research on AI ethics..."></textarea>
+                        <label for="reason" class="block text-sm font-medium text-gray-700">Reason (Optional)</label>
+                        <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="e.g., For research..."></textarea>
                     </div>
                     <div class="pt-4">
-                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
                             Submit Request
                         </button>
                     </div>
@@ -72,13 +79,14 @@
 <footer th:replace="~{fragments :: footer}"></footer>
 <div th:replace="~{fragments :: notification_system}"></div>
 
-<!-- Script to show flash messages from the controller -->
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
         const successMessage = /*[[${successMessage}]]*/ null;
         const errorMessage = /*[[${errorMessage}]]*/ null;
-        if (successMessage) { showNotification(successMessage, 'success'); }
-        if (errorMessage) { showNotification(errorMessage, 'error'); }
+        if (typeof showNotification === 'function') {
+            if (successMessage) { showNotification(successMessage, 'success'); }
+            if (errorMessage) { showNotification(errorMessage, 'error'); }
+        }
     });
 </script>
 

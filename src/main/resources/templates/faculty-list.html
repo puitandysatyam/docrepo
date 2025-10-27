@@ -9,34 +9,51 @@
 
 <nav th:replace="~{fragments :: navbar}"></nav>
 
-<!-- Main Content -->
+<!-- Main Content - Adjusts padding -->
 <main class="flex-grow container mx-auto px-4 py-8">
-    <div class="bg-white p-8 rounded-xl shadow-lg">
+    <!-- Main card container - Adjusts padding -->
+    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
 
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
+        <!-- Responsive heading size -->
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
             Faculty of <span th:text="${departmentName}">Department</span>
         </h1>
 
+        <!-- Responsive text size -->
         <div th:if="${#lists.isEmpty(facultyMembers)}" class="text-center py-12">
-            <p class="text-gray-500 text-lg">No faculty members found for this department.</p>
+            <p class="text-gray-500 text-sm sm:text-lg">No faculty members found for this department.</p>
         </div>
 
-        <div th:if="${not #lists.isEmpty(facultyMembers)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!--
+          Responsive Grid:
+          - grid-cols-1: Default to 1 column (mobile).
+          - md:grid-cols-2: Switch to 2 columns on medium screens (tablets) and up.
+          - lg:grid-cols-3: Switch to 3 columns on large screens (desktops) and up.
+          - gap-4 sm:gap-6: Adjust spacing between cards.
+        -->
+        <div th:if="${not #lists.isEmpty(facultyMembers)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
             <!-- Loop through each faculty member passed from the controller -->
+            <!-- Card padding adjusted -->
             <a th:each="faculty : ${facultyMembers}"
                th:href="@{/browse/{deptName}/{facultyId}(deptName=${departmentName}, facultyId=${faculty.id})}"
-               class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 hover:shadow-xl transition-all duration-300">
+               class="block p-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 hover:shadow-xl transition-all duration-300">
 
-                <div class="flex items-center space-x-4">
+                <!-- Adjust spacing -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
                     <div class="flex-shrink-0">
-                        <img class="h-12 w-12 rounded-full object-cover" th:src="${faculty.profileImageUrl}" alt="Faculty profile picture">
+                        <!-- Responsive image size -->
+                        <img class="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-cover border-2 border-indigo-200"
+                             th:src="${faculty.profileImageUrl}"
+                             onerror="this.onerror=null; this.src='https://placehold.co/100x100/EBF4FF/7F9CF5?text=Pic';"
+                             alt="Faculty profile picture">
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold tracking-tight text-gray-900" th:text="${faculty.fullName}">
+                        <!-- Responsive text sizes -->
+                        <h2 class="text-base sm:text-lg font-bold tracking-tight text-gray-900" th:text="${faculty.fullName}">
                             Faculty Name
                         </h2>
-                        <p class="text-sm text-gray-600" th:text="${faculty.email}">faculty.email@college.edu</p>
+                        <p class="text-xs sm:text-sm text-gray-600" th:text="${faculty.email}">faculty.email@college.edu</p>
                     </div>
                 </div>
             </a>

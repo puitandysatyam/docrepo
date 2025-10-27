@@ -6,15 +6,21 @@
 <body class="bg-gray-100 flex flex-col min-h-screen">
 <nav th:replace="~{fragments :: navbar}"></nav>
 
-<main class="flex-grow container mx-auto px-4 py-8">
-    <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
-        <h1 class="text-2xl font-bold text-red-600 mb-4">Confirm Deletion</h1>
-        <p class="text-gray-700 mb-2">Are you sure you want to permanently delete the following document?</p>
+<!-- Main content now centers the card vertically on the page and adjusts padding -->
+<main class="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
+    <!-- Card now has responsive padding (p-6, sm:p-8) and is full-width on mobile -->
+    <div class="max-w-lg w-full bg-white p-6 sm:p-8 rounded-xl shadow-lg text-center">
+        <!-- Responsive heading size -->
+        <h1 class="text-xl sm:text-2xl font-bold text-red-600 mb-4">Confirm Deletion</h1>
+        <!-- Responsive text size -->
+        <p class="text-gray-700 mb-2 text-sm sm:text-base">Are you sure you want to permanently delete the following document?</p>
 
         <!-- The document's title is displayed so the user is certain about what they are deleting. -->
-        <p class="text-lg font-semibold text-gray-900 mb-6" th:text="${document.title}">Document Title Here</p>
+        <!-- Responsive text size -->
+        <p class="text-base sm:text-lg font-semibold text-gray-900 mb-6" th:text="${document.title}">Document Title Here</p>
 
-        <p class="text-sm text-gray-500 mb-6">This action cannot be undone. All associated download requests will also be removed.</p>
+        <!-- Responsive text size -->
+        <p class="text-xs sm:text-sm text-gray-500 mb-6">This action cannot be undone. All associated download requests will also be removed.</p>
 
         <!--
           This form performs the actual deletion.
@@ -22,16 +28,26 @@
           - The hidden '_method' input tells Spring Boot to treat this as a DELETE request,
             which is the correct and secure standard for a destructive action.
         -->
-        <form th:action="@{/documents/{id}/delete(id=${document.id})}" method="post" class="flex justify-center space-x-4">
+        <!--
+          RESPONSIVE CHANGE:
+          - 'flex-col': Stacks buttons vertically on mobile.
+          - 'space-y-3': Adds vertical space on mobile.
+          - 'sm:flex-row': Switches to horizontal layout on small screens and up.
+          - 'sm:space-y-0': Removes vertical space on larger screens.
+          - 'sm:space-x-4': Adds horizontal space on larger screens.
+        -->
+        <form th:action="@{/documents/{id}/delete(id=${document.id})}" method="post" class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
             <input type="hidden" name="_method" value="DELETE" />
 
             <!-- The "Cancel" button is a simple link back to the safety of the profile page. -->
-            <a th:href="@{/profile}" class="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm hover:bg-gray-300">
+            <!-- RESPONSIVE CHANGE: 'w-full sm:w-auto' makes button full-width on mobile, auto-width on larger screens. -->
+            <a th:href="@{/profile}" class="w-full sm:w-auto px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm hover:bg-gray-300 transition-colors">
                 Cancel
             </a>
 
             <!-- The "Yes, Delete" button submits the form, triggering the secure backend deletion process. -->
-            <button type="submit" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-sm hover:bg-red-700">
+            <!-- RESPONSIVE CHANGE: 'w-full sm:w-auto' makes button full-width on mobile, auto-width on larger screens. -->
+            <button type="submit" class="w-full sm:w-auto px-6 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-sm hover:bg-red-700 transition-colors">
                 Yes, Delete
             </button>
         </form>

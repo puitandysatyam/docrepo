@@ -8,97 +8,106 @@
 <!-- Include the navigation bar fragment -->
 <nav th:replace="~{fragments :: navbar}"></nav>
 
-<!-- Main Content -->
+<!-- Main Content - Adjusts padding -->
 <main class="flex-grow container mx-auto px-4 py-8">
-  <div th:replace="~{fragments :: notification_system}"></div>
-  <div class="max-w-4xl mx-auto">
-    <!-- Profile Details Section -->
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-      <div class="md:flex">
-        <!-- Profile Image Section -->
-        <div class="md:flex-shrink-0">
-          <img class="h-48 w-full object-cover md:h-full md:w-64"
-               th:src="${faculty.profileImageUrl}"
-               alt="Profile picture"
-               onerror="this.onerror=null; this.src='https://placehold.co/400x600/EBF4FF/7F9CF5?text=No+Image';">
-        </div>
+    <div th:replace="~{fragments :: notification_system}"></div>
+    <div class="max-w-4xl mx-auto">
+        <!-- Profile Details Section - Adjusts padding -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+            <!-- Responsive layout: stack vertically by default, row on medium screens+ -->
+            <div class="md:flex">
+                <!-- Profile Image Section - Adjusts size responsiveness -->
+                <div class="md:flex-shrink-0">
+                    <img class="h-48 w-full object-cover md:h-full md:w-64"
+                         th:src="${faculty.profileImageUrl}"
+                         alt="Profile picture"
+                         onerror="this.onerror=null; this.src='https://placehold.co/400x600/EBF4FF/7F9CF5?text=No+Image';">
+                </div>
 
-        <!-- Profile Info Section -->
-        <div class="p-8 flex flex-col justify-between">
-          <div>
-            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold" th:text="${'Department of ' + faculty.department}">
-              Department of Computer Science
+                <!-- Profile Info Section - Adjusts padding and text alignment -->
+                <div class="p-6 sm:p-8 flex flex-col justify-between w-full">
+                    <!-- Text content - Adjusts text sizes -->
+                    <div class="text-center md:text-left">
+                        <div class="uppercase tracking-wide text-xs sm:text-sm text-indigo-500 font-semibold" th:text="${'Department of ' + faculty.department}">
+                            Department of Computer Science
+                        </div>
+                        <h1 class="block mt-1 text-2xl sm:text-3xl leading-tight font-bold text-black" th:text="${faculty.fullName}">
+                            Your Full Name
+                        </h1>
+                        <p class="mt-2 text-gray-600 text-sm sm:text-base">
+                            Email: <a th:href="'mailto:' + ${faculty.email}" class="text-indigo-600 hover:underline" th:text="${faculty.email}">your.email@university.edu</a>
+                        </p>
+                        <!-- Use '?:' operator for a default message if description is null or empty -->
+                        <p class="mt-4 text-gray-500 text-xs sm:text-sm" th:text="${faculty.profileDescription ?: 'No description provided.'}">
+                            Your professional biography and research interests will appear here.
+                        </p>
+                    </div>
+                    <!-- Edit Profile Button - Adjusts margins and alignment -->
+                    <div class="mt-6 self-center md:self-end">
+                        <a th:href="@{/profile/edit}" class="inline-block px-4 py-2 sm:px-6 sm:py-2 bg-gray-200 text-gray-800 text-sm font-semibold rounded-lg shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors">
+                            Edit Profile
+                        </a>
+                    </div>
+                </div>
             </div>
-            <h1 class="block mt-1 text-3xl leading-tight font-bold text-black" th:text="${faculty.fullName}">
-              Your Full Name
-            </h1>
-            <p class="mt-2 text-gray-600">
-              Email: <a th:href="'mailto:' + ${faculty.email}" class="text-indigo-600 hover:underline" th:text="${faculty.email}">your.email@university.edu</a>
-            </p>
-            <p class="mt-4 text-gray-500" th:text="${faculty.profileDescription}">
-              Your professional biography and research interests will appear here.
-            </p>
-          </div>
-          <!-- Edit Profile Button -->
-          <div class="mt-6">
-            <a th:href="@{/profile/edit}" class="inline-block px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors">
-              Edit Profile
-            </a>
-          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Published Documents Section -->
-    <div class="bg-white p-8 rounded-xl shadow-lg mt-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6">My Published Documents</h2>
+        <!-- Published Documents Section - Adjusts padding -->
+        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg mt-8">
+            <!-- Responsive heading size -->
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-6">My Published Documents</h2>
 
-      <!-- Message if no documents are found -->
-      <div th:if="${#lists.isEmpty(documents)}">
-        <p class="text-gray-500">You have not uploaded any documents yet.</p>
-      </div>
+            <!-- Message if no documents are found - Adjusts text size -->
+            <div th:if="${#lists.isEmpty(documents)}" class="text-center py-6">
+                <p class="text-gray-500 text-sm sm:text-base">You have not uploaded any documents yet.</p>
+            </div>
 
-      <!-- List of documents -->
-      <div th:unless="${#lists.isEmpty(documents)}" class="space-y-4">
-        <!-- KEY CHANGES ARE INSIDE THIS LOOP -->
-        <div th:each="doc : ${documents}" class="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center">
-          <!-- Document Info (now a flex item) -->
-          <div class="flex-grow">
-            <!-- 1. The document title is now a clickable link -->
-            <a th:href="@{/documents/{id}(id=${doc.id})}" class="hover:underline">
-              <h3 class="text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
-            </a>
-            <p class="text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
-            <p class="text-xs text-gray-400 mt-2">Uploaded on: <span th:text="${doc.uploadDate}"></span></p>
-          </div>
-          <!-- Action Buttons -->
-          <div class="mt-4 md:mt-0 flex space-x-2 self-end md:self-center">
-            <!-- 2. The new Delete button -->
-            <a th:href="@{/documents/{id}/delete(id=${doc.id})}" class="px-3 py-2 bg-red-500 text-white text-xs font-semibold rounded-md hover:bg-red-600">
-              Delete
-            </a>
-          </div>
+            <!-- List of documents - Adjusts spacing -->
+            <div th:unless="${#lists.isEmpty(documents)}" class="space-y-4 sm:space-y-6">
+                <!-- KEY CHANGES ARE INSIDE THIS LOOP -->
+                <!-- Document Card - Adjusts padding -->
+                <div th:each="doc : ${documents}" class="p-4 border rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <!-- Document Info (now a flex item) - Adjusts margins -->
+                    <div class="flex-grow mb-4 md:mb-0 md:mr-4">
+                        <!-- 1. The document title is now a clickable link - Adjusts text size -->
+                        <a th:href="@{/documents/{id}(id=${doc.id})}" class="hover:underline">
+                            <h3 class="text-base sm:text-lg font-semibold text-indigo-700" th:text="${doc.title}">Document Title</h3>
+                        </a>
+                        <!-- Responsive text size -->
+                        <p class="text-xs sm:text-sm text-gray-500">Topic: <span class="font-medium" th:text="${doc.topic}">Topic</span></p>
+                        <p class="text-xs text-gray-400 mt-2">Uploaded on: <span th:text="${doc.uploadDate}"></span></p>
+                    </div>
+                    <!-- Action Buttons - Adjusts alignment and button size -->
+                    <div class="mt-4 md:mt-0 flex space-x-2 self-end md:self-center">
+                        <!-- 2. The new Delete button - Adjusts padding/text size -->
+                        <a th:href="@{/documents/{id}/delete(id=${doc.id})}" class="px-2 py-1 sm:px-3 sm:py-2 bg-red-500 text-white text-xs font-semibold rounded-md hover:bg-red-600 transition-colors">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </main>
 
 <!-- Include the footer fragment -->
 <footer th:replace="~{fragments :: footer}"></footer>
 <script th:inline="javascript">
-  /* A small script to check for flash messages from the controller and show them */
-  document.addEventListener('DOMContentLoaded', function() {
-    const successMessage = /*[[${successMessage}]]*/ null;
-    const errorMessage = /*[[${errorMessage}]]*/ null;
+    /* A small script to check for flash messages from the controller and show them */
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = /*[[${successMessage}]]*/ null;
+        const errorMessage = /*[[${errorMessage}]]*/ null;
 
-    if (successMessage) {
-      showNotification(successMessage, 'success');
-    }
-    if (errorMessage) {
-      showNotification(errorMessage, 'error');
-    }
-  });
+        if (typeof showNotification === 'function') {
+            if (successMessage) {
+                showNotification(successMessage, 'success');
+            }
+            if (errorMessage) {
+                showNotification(errorMessage, 'error');
+            }
+        }
+    });
 </script>
 </body>
 </html>
+
