@@ -1,5 +1,6 @@
 package org.project.docrepo.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.project.docrepo.model.DocumentDto;
 import org.project.docrepo.model.Documents;
@@ -111,18 +112,33 @@ public class DocumentController {
 
     // --- DOCUMENT DETAILS MAPPING (Corrected) ---
     @GetMapping("/documents/{id}")
-    public String showDocumentDetails(Model model, @PathVariable String id, @AuthenticationPrincipal User user){
+    public String showDocumentDetails(Model model, @PathVariable String id, @AuthenticationPrincipal User user, HttpServletRequest request){
         Documents doc = documentRepo.findById(id).orElse(null);
         if (doc == null) { throw new RuntimeException("Document not found"); }
 
         User faculty = userService.findUserById(doc.getFacultyId()).orElse(null);
         String fileName = doc.getFileUrl().substring(doc.getFileUrl().lastIndexOf('/') + 1);
+
+        String userAgent = request.getHeader("User-Agent");
+        boolean isMobileDevice = false;
+
+        // 3. Check for common mobile keywords.
+        // This is a simple but effective way to detect mobile browsers,
+        // even in "Desktop Mode" as they often still include "Android" or "Mobile".
+        if (userAgent != null) {
+            userAgent = userAgent.toLowerCase();
+            isMobileDevice = userAgent.contains("mobile") ||
+                    userAgent.contains("android") ||
+                    userAgent.contains("iphone") ||
+                    userAgent.contains("ipad");
+        }
         // ** KEY CHANGE **: For B2, the file URL is the preview URL for browser-compatible files like PDFs.
         // We no longer need to construct a special Google Drive URL.
         model.addAttribute("document", doc);
         model.addAttribute("faculty", faculty);
         model.addAttribute("previewUrl", b2StorageService.generatePresignedUrl(fileName) + "#toolbar=0"); // Use the direct file URL for the preview.
         model.addAttribute("currentUser", user);
+        model.addAttribute("isMobileDevice", isMobileDevice);
 
         return "document-details";
     }
